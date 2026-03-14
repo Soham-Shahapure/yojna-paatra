@@ -1,99 +1,473 @@
-"use client"
+import { useState, useEffect } from "react";
+import { User, IndianRupee, Map } from "lucide-react";
 
-import { User, IndianRupee, Map } from "lucide-react"
+const CONTENT = {
+  mr: {
+    title: "माहिती भरा",
+    subtitle: "तुमची माहिती भरा, योग्य योजना शोधा",
+    ageLabel: "तुमचे वय किती आहे?",
+    agePlaceholder: "उदा. ३५",
+    incomeLabel: "वार्षिक उत्पन्न",
+    incomeOptions: [
+      { value: "",       label: "-- निवडा --" },
+      { value: "<1L",    label: "१ लाखापेक्षा कमी" },
+      { value: "1-2.5L", label: "१ ते २.५ लाख" },
+      { value: ">2.5L",  label: "२.५ लाखापेक्षा जास्त" },
+    ],
+    landLabel: "शेतजमीन किती आहे?",
+    landOptions: [
+      { value: "",      label: "-- निवडा --" },
+      { value: "None",  label: "जमीन नाही (Landless)" },
+      { value: "<2",    label: "२ हेक्टरपेक्षा कमी" },
+      { value: ">2",    label: "२ हेक्टरपेक्षा जास्त" },
+    ],
+    cta: "माझ्यासाठी योजना शोधा →",
+    step: "पाऊल",
+    complete: "पूर्ण",
+  },
+  en: {
+    title: "Fill Your Details",
+    subtitle: "Answer 3 quick questions to find your schemes",
+    ageLabel: "What is your age?",
+    agePlaceholder: "e.g. 35",
+    incomeLabel: "Annual Income",
+    incomeOptions: [
+      { value: "",       label: "-- Select --" },
+      { value: "<1L",    label: "Less than ₹1 Lakh" },
+      { value: "1-2.5L", label: "₹1 to ₹2.5 Lakhs" },
+      { value: ">2.5L",  label: "More than ₹2.5 Lakhs" },
+    ],
+    landLabel: "Land Holding",
+    landOptions: [
+      { value: "",      label: "-- Select --" },
+      { value: "None",  label: "No Land (Landless)" },
+      { value: "<2",    label: "Less than 2 Hectares" },
+      { value: ">2",    label: "More than 2 Hectares" },
+    ],
+    cta: "Find Schemes for Me →",
+    step: "Step",
+    complete: "complete",
+  },
+};
 
-function InputCard({ icon, label, children }) {
+// ── Tiny wheat SVG watermark ──────────────────────────────────────────────────
+const MiniWheat = ({ style }) => (
+  <svg viewBox="0 0 30 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <path d="M15 56 Q14 40 15 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <ellipse cx="15" cy="7"  rx="4" ry="6.5" fill="currentColor" opacity="0.9" transform="rotate(-10 15 7)"/>
+    <ellipse cx="10" cy="18" rx="3.5" ry="6" fill="currentColor" opacity="0.7" transform="rotate(-28 10 18)"/>
+    <ellipse cx="20" cy="18" rx="3.5" ry="6" fill="currentColor" opacity="0.7" transform="rotate(28 20 18)"/>
+    <ellipse cx="9"  cy="29" rx="3" ry="5"   fill="currentColor" opacity="0.5" transform="rotate(-22 9 29)"/>
+    <ellipse cx="21" cy="29" rx="3" ry="5"   fill="currentColor" opacity="0.5" transform="rotate(22 21 29)"/>
+  </svg>
+);
+
+// ── Animated progress bar ─────────────────────────────────────────────────────
+function ProgressBar({ filled, total }) {
   return (
-    <div className="rounded-2xl bg-card p-5 shadow-md">
-      <div className="mb-3 flex items-center gap-3">
-        <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
-        >
-          {icon}
-        </div>
-        <label className="text-lg font-semibold text-card-foreground">{label}</label>
-      </div>
-      {children}
+    <div style={{ display: "flex", gap: 6, justifyContent: "center", alignItems: "center" }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{
+          height: 5, borderRadius: 99,
+          width: i < filled ? 28 : 8,
+          background: i < filled
+            ? "linear-gradient(90deg, #FACC15, #F59E0B)"
+            : "rgba(255,255,255,0.2)",
+          transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          boxShadow: i < filled ? "0 0 8px rgba(250,204,21,0.6)" : "none",
+        }} />
+      ))}
     </div>
-  )
+  );
 }
 
-// Notice we added the 'language' prop here!
-export default function FormView({ userData, onFormChange, onSubmit, language }) {
-  const isMarathi = language === "mr";
+// ── Field card with staggered pop-in ─────────────────────────────────────────
+function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focusedField, fieldKey }) {
+  const [mounted, setMounted] = useState(false);
+  const isFocused = focusedField === fieldKey;
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), animDelay);
+    return () => clearTimeout(t);
+  }, [animDelay]);
 
   return (
-    <div className="flex min-h-svh flex-col bg-background text-foreground">
-      {/* Header */}
-      <header className="px-6 pt-8 pb-4">
-        <h1 className="text-center text-2xl font-bold tracking-tight" style={{ color: "var(--primary)" }}>
-          {isMarathi ? "माहिती भरा" : "Fill Details"}
-        </h1>
-        <p className="mt-1 text-center text-sm text-muted-foreground">
-          {isMarathi ? "तुमची माहिती भरा, योग्य योजना शोधा" : "Enter your details to find eligible schemes"}
-        </p>
-      </header>
+    <div style={{
+      background: "#fff",
+      borderRadius: 20,
+      padding: "20px 20px 18px",
+      position: "relative",
+      overflow: "hidden",
+      // ── POP-IN animation ──
+      opacity: mounted ? 1 : 0,
+      transform: mounted ? "translateY(0) scale(1)" : "translateY(32px) scale(0.96)",
+      transition: "opacity 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
+      // ── Focus lift ──
+      boxShadow: isFocused
+        ? "0 12px 36px rgba(27,67,50,0.18), 0 0 0 2.5px #FACC15"
+        : filled
+          ? "0 6px 24px rgba(27,67,50,0.13), 0 0 0 2px rgba(27,67,50,0.15)"
+          : "0 2px 12px rgba(0,0,0,0.06)",
+    }}>
 
-      {/* Form Cards */}
-      <div className="flex flex-1 flex-col gap-4 px-5 pb-28">
-        {/* Age */}
-        <InputCard icon={<User className="h-5 w-5" aria-hidden="true" />} label={isMarathi ? "तुमचे वय किती आहे?" : "What is your age?"}>
-          <input
-            type="number"
-            inputMode="numeric"
-            placeholder={isMarathi ? "उदा. 35" : "e.g. 35"}
-            min={1}
-            max={120}
-            value={userData.age}
-            onChange={(e) => onFormChange("age", e.target.value)}
-            className="w-full rounded-xl border-2 border-input bg-background px-4 py-4 text-xl font-semibold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-          />
-        </InputCard>
+      {/* left accent bar */}
+      <div style={{
+        position: "absolute", left: 0, top: 0, bottom: 0, width: 4,
+        borderRadius: "20px 0 0 20px",
+        background: isFocused
+          ? "linear-gradient(to bottom, #FACC15, #F59E0B)"
+          : filled
+            ? "linear-gradient(to bottom, #FACC15, #F59E0B)"
+            : "#e5e7eb",
+        transition: "background 0.3s ease",
+      }} />
 
-        {/* Annual Income */}
-        <InputCard icon={<IndianRupee className="h-5 w-5" aria-hidden="true" />} label={isMarathi ? "वार्षिक उत्पन्न" : "Annual Income"}>
-          <select
-            value={userData.income}
-            onChange={(e) => onFormChange("income", e.target.value)}
-            className="w-full appearance-none rounded-xl border-2 border-input bg-background px-4 py-4 text-lg font-medium text-foreground focus:border-primary focus:outline-none"
-          >
-            <option value="">{isMarathi ? "-- निवडा --" : "-- Select --"}</option>
-            <option value="<1L">{isMarathi ? "१ लाखापेक्षा कमी" : "Less than 1 Lakh"}</option>
-            <option value="1-2.5L">{isMarathi ? "१ ते २.५ लाख" : "1 to 2.5 Lakhs"}</option>
-            <option value=">2.5L">{isMarathi ? "२.५ लाखापेक्षा जास्त" : "More than 2.5 Lakhs"}</option>
-          </select>
-        </InputCard>
-
-
-        {/* Land Holding */}
-        <InputCard icon={<Map className="h-5 w-5" aria-hidden="true" />} label={isMarathi ? "शेतजमीन किती आहे?" : "Land Holding"}>
-          <select
-            value={userData.land}
-            onChange={(e) => onFormChange("land", e.target.value)}
-            className="w-full appearance-none rounded-xl border-2 border-input bg-background px-4 py-4 text-lg font-medium text-foreground focus:border-primary focus:outline-none"
-          >
-            <option value="">{isMarathi ? "-- निवडा --" : "-- Select --"}</option>
-            <option value="None">{isMarathi ? "जमीन नाही (Landless)" : "No Land"}</option>
-            <option value="<2">{isMarathi ? "२ हेक्टरपेक्षा कमी (Marginal/Small)" : "Less than 2 Hectares"}</option>
-            <option value=">2">{isMarathi ? "२ हेक्टरपेक्षा जास्त (Large)" : "More than 2 Hectares"}</option>
-          </select>
-        </InputCard>
+      {/* faint wheat watermark */}
+      <div style={{
+        position: "absolute", right: -6, bottom: -10,
+        width: 52, color: "#1B4332", opacity: 0.04, pointerEvents: "none",
+      }}>
+        <MiniWheat style={{ width: "100%", height: "auto" }} />
       </div>
 
-      {/* Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background px-5 pb-6 pt-3">
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingLeft: 8 }}>
+        <div style={{
+          width: 42, height: 42, borderRadius: 13, flexShrink: 0,
+          background: filled || isFocused
+            ? "linear-gradient(135deg, #1B4332, #40916c)"
+            : "#f3f4f6",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: filled || isFocused ? "#FACC15" : "#9ca3af",
+          transition: "all 0.3s ease",
+          boxShadow: filled || isFocused ? "0 4px 12px rgba(27,67,50,0.25)" : "none",
+          // subtle pulse when focused
+          animation: isFocused ? "iconPulse 1.8s ease-in-out infinite" : "none",
+        }}>
+          {icon}
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+            textTransform: "uppercase", marginBottom: 2,
+            color: filled || isFocused ? "#F59E0B" : "#9ca3af",
+            transition: "color 0.3s ease",
+          }}>
+            {stepLabel}
+          </div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: "#1a2e22" }}>{label}</div>
+        </div>
+
+        {/* animated tick */}
+        <div style={{
+          width: 26, height: 26, borderRadius: "50%",
+          background: "linear-gradient(135deg, #FACC15, #F59E0B)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 13, color: "#1a2e22", fontWeight: 900,
+          boxShadow: "0 2px 8px rgba(245,158,11,0.4)",
+          // scale in when filled
+          transform: filled ? "scale(1) rotate(0deg)" : "scale(0) rotate(-90deg)",
+          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}>✓</div>
+      </div>
+
+      <div style={{ paddingLeft: 8 }}>{children}</div>
+    </div>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+export default function FormView({
+  userData = { age: "", income: "", land: "" },
+  onFormChange = () => {},
+  onSubmit = () => {},
+  language = "mr",
+}) {
+  const t = CONTENT[language] || CONTENT.mr;
+  const [focusedField, setFocusedField] = useState(null);
+  const [headerVisible, setHeaderVisible] = useState(false);
+
+  // header slides down on mount
+  useEffect(() => {
+    const t = setTimeout(() => setHeaderVisible(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
+  const filledCount = [
+    userData.age !== "",
+    userData.income !== "",
+    userData.land !== "",
+  ].filter(Boolean).length;
+
+  const allFilled = filledCount === 3;
+
+  const baseInputStyle = {
+    width: "100%", borderRadius: 12,
+    border: "2px solid #e5e7eb",
+    background: "#f9fafb",
+    padding: "13px 16px",
+    fontSize: 16, fontWeight: 700,
+    color: "#1a2e22", fontFamily: "inherit",
+    outline: "none", boxSizing: "border-box",
+    transition: "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
+    appearance: "none", WebkitAppearance: "none",
+  };
+
+  // shared focus/blur handlers
+  const onFocus = (field) => setFocusedField(field);
+  const onBlur  = () => setFocusedField(null);
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
+      fontFamily: "'Noto Serif', 'Georgia', serif",
+      paddingBottom: 110,
+      position: "relative",
+      overflow: "hidden",
+    }}>
+
+      {/* ghost wheat — bottom corners */}
+      {[
+        { bottom: 80, left: -20, flip: false },
+        { bottom: 60, right: -16, flip: true },
+      ].map((s, i) => (
+        <div key={i} style={{
+          position: "fixed", bottom: s.bottom,
+          ...(s.flip ? { right: s.right } : { left: s.left }),
+          width: 120, color: "#1B4332", opacity: 0.04,
+          pointerEvents: "none", zIndex: 0,
+          transform: s.flip ? "scaleX(-1)" : undefined,
+        }}>
+          <MiniWheat style={{ width: "100%", height: "auto" }} />
+        </div>
+      ))}
+
+      {/* ── Header — slides down on mount ── */}
+      <div style={{
+        background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
+        padding: "38px 24px 30px",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+        // slide down animation
+        opacity: headerVisible ? 1 : 0,
+        transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
+        transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+      }}>
+        {/* dot grid */}
+        <div style={{
+          position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.055,
+          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }} />
+
+        {/* yellow top line */}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 3,
+          background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
+        }} />
+
+        {/* corner wheat */}
+        {[{ left: 8, flip: false }, { right: 8, flip: true }].map((s, i) => (
+          <div key={i} style={{
+            position: "absolute", bottom: -4,
+            ...(s.flip ? { right: s.right } : { left: s.left }),
+            width: 38, color: "#FACC15", opacity: 0.15,
+            transform: s.flip ? "scaleX(-1)" : undefined,
+            pointerEvents: "none",
+          }}>
+            <MiniWheat style={{ width: "100%", height: "auto" }} />
+          </div>
+        ))}
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ fontSize: 26, marginBottom: 8 }}>📋</div>
+          <h1 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
+            {t.title}
+          </h1>
+          <p style={{ fontSize: 13, color: "rgba(200,235,216,0.72)", margin: "0 0 20px" }}>
+            {t.subtitle}
+          </p>
+          <ProgressBar filled={filledCount} total={3} />
+          <div style={{
+            fontSize: 11, color: "rgba(250,204,21,0.7)",
+            marginTop: 8, fontWeight: 700, letterSpacing: "0.06em",
+          }}>
+            {filledCount} / 3 {t.complete}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Fields — staggered pop-in ── */}
+      <div style={{
+        padding: "20px 16px",
+        display: "flex", flexDirection: "column", gap: 14,
+        position: "relative", zIndex: 1,
+      }}>
+
+        {/* Age — pops in at 200ms */}
+        <FieldCard
+          icon={<User size={18} />}
+          label={t.ageLabel}
+          stepLabel={`${t.step} 1 / 3`}
+          filled={userData.age !== ""}
+          animDelay={200}
+          focusedField={focusedField}
+          fieldKey="age"
+        >
+          <input
+            type="number" inputMode="numeric"
+            placeholder={t.agePlaceholder}
+            min={1} max={120}
+            value={userData.age}
+            onChange={e => onFormChange("age", e.target.value)}
+            onFocus={() => onFocus("age")}
+            onBlur={onBlur}
+            style={{
+              ...baseInputStyle,
+              borderColor: focusedField === "age"
+                ? "#FACC15"
+                : userData.age ? "#1B4332" : "#e5e7eb",
+              boxShadow: focusedField === "age"
+                ? "0 0 0 3px rgba(250,204,21,0.2)"
+                : "none",
+              background: focusedField === "age" ? "#fffbeb" : "#f9fafb",
+            }}
+          />
+        </FieldCard>
+
+        {/* Income — pops in at 380ms */}
+        <FieldCard
+          icon={<IndianRupee size={18} />}
+          label={t.incomeLabel}
+          stepLabel={`${t.step} 2 / 3`}
+          filled={userData.income !== ""}
+          animDelay={380}
+          focusedField={focusedField}
+          fieldKey="income"
+        >
+          <div style={{ position: "relative" }}>
+            <select
+              value={userData.income}
+              onChange={e => onFormChange("income", e.target.value)}
+              onFocus={() => onFocus("income")}
+              onBlur={onBlur}
+              style={{
+                ...baseInputStyle,
+                paddingRight: 40,
+                borderColor: focusedField === "income"
+                  ? "#FACC15"
+                  : userData.income ? "#1B4332" : "#e5e7eb",
+                boxShadow: focusedField === "income"
+                  ? "0 0 0 3px rgba(250,204,21,0.2)"
+                  : "none",
+                background: focusedField === "income" ? "#fffbeb" : "#f9fafb",
+              }}
+            >
+              {t.incomeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <div style={{
+              position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+              pointerEvents: "none", color: "#9ca3af", fontSize: 11,
+            }}>▼</div>
+          </div>
+        </FieldCard>
+
+        {/* Land — pops in at 560ms */}
+        <FieldCard
+          icon={<Map size={18} />}
+          label={t.landLabel}
+          stepLabel={`${t.step} 3 / 3`}
+          filled={userData.land !== ""}
+          animDelay={560}
+          focusedField={focusedField}
+          fieldKey="land"
+        >
+          <div style={{ position: "relative" }}>
+            <select
+              value={userData.land}
+              onChange={e => onFormChange("land", e.target.value)}
+              onFocus={() => onFocus("land")}
+              onBlur={onBlur}
+              style={{
+                ...baseInputStyle,
+                paddingRight: 40,
+                borderColor: focusedField === "land"
+                  ? "#FACC15"
+                  : userData.land ? "#1B4332" : "#e5e7eb",
+                boxShadow: focusedField === "land"
+                  ? "0 0 0 3px rgba(250,204,21,0.2)"
+                  : "none",
+                background: focusedField === "land" ? "#fffbeb" : "#f9fafb",
+              }}
+            >
+              {t.landOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <div style={{
+              position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+              pointerEvents: "none", color: "#9ca3af", fontSize: 11,
+            }}>▼</div>
+          </div>
+        </FieldCard>
+
+      </div>
+
+      {/* ── Fixed CTA — slides up from bottom ── */}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0,
+        padding: "10px 16px 22px",
+        background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
+        zIndex: 10,
+        // slides up with delay after last card
+        opacity: 1,
+        animation: "ctaSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both",
+      }}>
         <button
           onClick={onSubmit}
-          className="w-full rounded-2xl py-5 text-xl font-bold tracking-wide shadow-lg transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          style={{
-            backgroundColor: "var(--primary)",
-            color: "var(--primary-foreground)",
+          disabled={!allFilled}
+          onMouseEnter={e => {
+            if (!allFilled) return;
+            e.currentTarget.style.transform = "translateY(-2px) scale(1.01)";
+            e.currentTarget.style.boxShadow = "0 16px 40px rgba(250,204,21,0.5)";
           }}
-        >
-          {isMarathi ? "माझ्यासाठी योजना शोधा" : "Find Schemes for me"}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = "translateY(0) scale(1)";
+            e.currentTarget.style.boxShadow = allFilled
+              ? "0 6px 20px rgba(250,204,21,0.3)" : "none";
+          }}
+          style={{
+            width: "100%", padding: "16px",
+            background: allFilled
+              ? "linear-gradient(135deg, #FACC15 0%, #F59E0B 100%)"
+              : "#e5e7eb",
+            color: allFilled ? "#1a2e22" : "#9ca3af",
+            fontWeight: 900, fontSize: 16,
+            border: "none", borderRadius: 14,
+            cursor: allFilled ? "pointer" : "not-allowed",
+            fontFamily: "inherit", letterSpacing: "0.04em",
+            boxShadow: allFilled ? "0 6px 20px rgba(250,204,21,0.3)" : "none",
+            transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}>
+          {allFilled
+            ? t.cta
+            : (language === "mr"
+                ? `${3 - filledCount} प्रश्न बाकी आहेत`
+                : `${3 - filledCount} fields remaining`)}
         </button>
       </div>
+
+      {/* ── Keyframes ── */}
+      <style>{`
+        @keyframes iconPulse {
+          0%, 100% { box-shadow: 0 4px 12px rgba(27,67,50,0.25); }
+          50%       { box-shadow: 0 4px 20px rgba(250,204,21,0.45), 0 0 0 4px rgba(250,204,21,0.12); }
+        }
+        @keyframes ctaSlideUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
-  )
+  );
 }
