@@ -8,29 +8,36 @@ import ResultsView from "./components/ResultsView";
 import DetailsView from "./components/DetailsView";
 
 const VIEWS = {
-  HOME:    "HOME",
-  FORM:    "FORM",
+  HOME: "HOME",
+  FORM: "FORM",
   RESULTS: "RESULTS",
   DETAILS: "DETAILS",
 };
 
-const INITIAL_USER_DATA = { age: "", income: "<1L", land: "None" };
+const INITIAL_USER_DATA = {
+  age: "",
+  income: "<1L",
+  land: "None", 
+};
 
 export default function App() {
-  const [currentView, setCurrentView] = useState(VIEWS.HOME);  // ← Starts on HOME again
+  const [currentView, setCurrentView] = useState(VIEWS.HOME);
   const [userData, setUserData] = useState(INITIAL_USER_DATA);
   const [eligibleSchemes, setEligibleSchemes] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState(null);
+  
+  // ─── NEW GLOBAL LANGUAGE STATE ──────────────────────────────
   const [language, setLanguage] = useState("mr");
 
-  const handleStart   = () => setCurrentView(VIEWS.FORM);
-  const handleReset   = () => { setUserData(INITIAL_USER_DATA); setCurrentView(VIEWS.HOME); };
+  const handleStart = () => setCurrentView(VIEWS.FORM);
 
-  const handleFormChange = (field, value) =>
-    setUserData(prev => ({ ...prev, [field]: value }));
+  const handleFormChange = (field, value) => {
+    setUserData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleFormSubmit = () => {
-    const results = getEligibleSchemes({ ...userData, age: Number(userData.age) }, schemes);
+    const normalizedData = { ...userData, age: Number(userData.age) };
+    const results = getEligibleSchemes(normalizedData, schemes);
     setEligibleSchemes(results);
     setCurrentView(VIEWS.RESULTS);
   };
@@ -42,28 +49,34 @@ export default function App() {
 
   const handleBack = () => {
     const backMap = {
-      [VIEWS.FORM]:    VIEWS.HOME,
+      [VIEWS.FORM]: VIEWS.HOME,
       [VIEWS.RESULTS]: VIEWS.FORM,
       [VIEWS.DETAILS]: VIEWS.RESULTS,
     };
-    const dest = backMap[currentView];
-    if (dest) setCurrentView(dest);
+    const destination = backMap[currentView];
+    if (destination) setCurrentView(destination);
+  };
+
+  const handleReset = () => {
+    setUserData(INITIAL_USER_DATA);
+    setEligibleSchemes([]);
+    setSelectedScheme(null);
+    setCurrentView(VIEWS.HOME);
   };
 
   return (
     <div className="app-root" data-view={currentView}>
-      
-      {/* ── Standard Header ── */}
       <header className="app-header bg-card shadow-sm px-6 py-4 flex items-center justify-between">
         <div className="app-header__logo flex items-center gap-2">
-          <span className="text-2xl">🌾</span>
-          <span className="font-bold" style={{ color: "var(--primary)" }}>
+          <span className="app-header__logo-icon text-2xl">🌾</span>
+          <span className="app-header__logo-text font-bold text-primary" style={{ color: "var(--primary)" }}>
             Yojna-Paatra
           </span>
         </div>
+
         {currentView !== VIEWS.HOME && (
           <button
-            className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="app-header__back-btn text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
             onClick={handleBack}
             aria-label="Go back"
           >
@@ -72,12 +85,15 @@ export default function App() {
         )}
       </header>
 
-      {/* ── Main Content ── */}
       <main className="app-main">
         {currentView === VIEWS.HOME && (
-          <HomeView onStart={handleStart} language={language} setLanguage={setLanguage} />
+          <HomeView 
+            onStart={handleStart} 
+            language={language} 
+            setLanguage={setLanguage} 
+          />
         )}
-        
+
         {currentView === VIEWS.FORM && (
           <FormView
             userData={userData}
@@ -86,7 +102,7 @@ export default function App() {
             language={language}
           />
         )}
-        
+
         {currentView === VIEWS.RESULTS && (
           <ResultsView
             eligibleSchemes={eligibleSchemes}
@@ -95,7 +111,7 @@ export default function App() {
             language={language}
           />
         )}
-        
+
         {currentView === VIEWS.DETAILS && (
           <DetailsView
             scheme={selectedScheme}
@@ -104,7 +120,6 @@ export default function App() {
           />
         )}
       </main>
-      
     </div>
   );
 }
