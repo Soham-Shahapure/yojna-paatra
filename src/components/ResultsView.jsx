@@ -72,7 +72,7 @@ function TwoLeafSlide({ onDone }) {
     const ease = t => -(Math.cos(Math.PI * t) - 1) / 2;
 
     const draw = () => {
-      progress += 0.011; // ~1.5s total
+      progress += 0.015; // ~1.1s total
       if (progress > 1) { cancelAnimationFrame(animId); onDone(); return; }
 
       // fill with page background so no white flash ever shows
@@ -82,18 +82,18 @@ function TwoLeafSlide({ onDone }) {
 
       // opacity: fade in → hold → fade out
       let alpha;
-      if      (progress < 0.1)  alpha = progress / 0.1;
-      else if (progress > 0.78) alpha = 1 - (progress - 0.78) / 0.22;
+      if      (progress < 0.08) alpha = progress / 0.08;
+      else if (progress > 0.88) alpha = 1 - (progress - 0.88) / 0.12;
       else                      alpha = 1;
 
       // LEFT leaf: enters from left, travels right toward centre
       // starts at -SIZE, ends at W*0.5 - SIZE*0.3
-      const xL = -SIZE + t * (W * 0.5 + SIZE * 0.2);
+      const xL = -SIZE + t * (W + SIZE * 2);
       // slight counter-clockwise rotation as it slides in
       const rotL = -0.3 + t * 0.5;
 
       // RIGHT leaf: enters from right, travels left toward centre
-      const xR = W + SIZE*0.2 - t * (W * 0.5 + SIZE * 0.4);
+      const xR = W + SIZE - t * (W + SIZE * 2);
       // clockwise rotation
       const rotR = 0.3 - t * 0.5;
 
@@ -314,7 +314,7 @@ export default function ResultsView({
         overflow: "hidden",
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+        transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1)",
       }}>
         {/* dot grid */}
         <div style={{

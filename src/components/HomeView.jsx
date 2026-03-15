@@ -88,7 +88,7 @@ class BurstParticle {
     this.x = x; this.y = y;
     this.img = imgs[Math.floor(Math.random() * imgs.length)];
     const angle = Math.random() * Math.PI * 2;
-    const speed = 2.5 + Math.random() * 7;
+    const speed = 5 + Math.random() * 10;
     this.vx = Math.cos(angle) * speed;
     this.vy = Math.sin(angle) * speed - 4;
     this.gravity = 0.08 + Math.random() * 0.07;
@@ -96,7 +96,7 @@ class BurstParticle {
     this.rotSpeed = (Math.random() - 0.5) * 0.28;
     this.scale = 0.5 + Math.random() * 1.4;
     this.alpha = 1;
-    this.decay = 0.004 + Math.random() * 0.006;
+    this.decay = 0.012 + Math.random() * 0.014;
     this.alive = true;
   }
   update() {
@@ -137,8 +137,8 @@ function CTAExplosionCanvas({ onDone }) {
       ctx.clearRect(0, 0, W, H);
       particles = particles.filter(p => p.alive);
       particles.forEach(p => { p.update(); p.draw(ctx); });
-      if (frame > 50) {
-        overlay = Math.min(1, overlay + 0.042);
+      if (frame > 25) {
+        overlay = Math.min(1, overlay + 0.18);
         ctx.fillStyle = `rgba(240,253,244,${overlay})`;
         ctx.fillRect(0, 0, W, H);
       }
@@ -263,7 +263,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
         position: "relative", zIndex: 5, width: "100%", maxWidth: 400,
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(110vh)",
-        transition: "opacity 0.7s cubic-bezier(0.34,1.56,0.64,1), transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
+        transition: "opacity 0.6s cubic-bezier(0.34,1.56,0.64,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1)",
         pointerEvents: visible ? "auto" : "none",
       }}>
         <div style={{

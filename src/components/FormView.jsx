@@ -35,7 +35,7 @@ function RippleBurstCanvas({ onDone }) {
     // ── 8 leaves evenly spread at 45° intervals ───────────────────────────
     const leaves = Array.from({ length: 8 }, (_, i) => {
       const angle = (i / 8) * Math.PI * 2;
-      const speed = 5 + Math.random() * 3;
+      const speed = 8 + Math.random() * 5;
       return {
         x: cx, y: cy,
         vx: Math.cos(angle) * speed,
@@ -90,7 +90,7 @@ function RippleBurstCanvas({ onDone }) {
         l.rotation += l.rotSpeed;
 
         // start fading after frame 35
-        if (frame > 35) l.alpha = Math.max(0, l.alpha - 0.045);
+        if (frame > 20) l.alpha = Math.max(0, l.alpha - 0.09);
         if (l.alpha <= 0) return;
 
         ctx.save();
@@ -104,7 +104,7 @@ function RippleBurstCanvas({ onDone }) {
 
       // ── Quick fade to results after frame 50 ─────────────────────────
       if (frame > 50) {
-        overlay = Math.min(1, overlay + 0.055);
+        overlay = Math.min(1, overlay + 0.15);
         ctx.fillStyle = `rgba(240,253,244,${overlay})`;
         ctx.fillRect(0, 0, W, H);
       }
@@ -391,7 +391,7 @@ export default function FormView({
         // slide down animation
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
       }}>
         {/* dot grid */}
         <div style={{
