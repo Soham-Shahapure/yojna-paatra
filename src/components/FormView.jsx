@@ -1,128 +1,91 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { User, IndianRupee, Map } from "lucide-react";
 
-// ── Leaf canvas factory ───────────────────────────────────────────────────────
-const BURST_COLORS = ["#FF9933","#FFB347","#FF8C00","#FFA500","#FFCC80","#F97316","#FB923C"];
-function createBurstLeaves() {
-  return BURST_COLORS.map(color => {
-    const c = document.createElement("canvas");
-    c.width = 28; c.height = 36;
-    const ctx = c.getContext("2d");
-    ctx.beginPath();
-    ctx.moveTo(14,34); ctx.bezierCurveTo(14,34,2,26,2,15);
-    ctx.bezierCurveTo(2,7,7,1,14,1); ctx.bezierCurveTo(21,1,26,7,26,15);
-    ctx.bezierCurveTo(26,26,14,34,14,34);
-    ctx.fillStyle = color; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(14,34); ctx.lineTo(14,1);
-    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 1; ctx.stroke();
-    return c;
-  });
+// ── Canvas leaf factory (for CTAExplosion) ────────────────────────────────────
+const LEAF_COLORS = ["#FF9933","#FFB347","#FF8C00","#FFA500","#FFCC80","#F97316","#FB923C","#FDBA74"];
+
+function makeLeafImg(color) {
+  const c = document.createElement("canvas");
+  c.width = 32; c.height = 42;
+  const ctx = c.getContext("2d");
+  ctx.beginPath();
+  ctx.moveTo(16,40); ctx.bezierCurveTo(16,40,2,30,2,17);
+  ctx.bezierCurveTo(2,8,8,1,16,1);
+  ctx.bezierCurveTo(24,1,30,8,30,17);
+  ctx.bezierCurveTo(30,30,16,40,16,40);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(16,40); ctx.lineTo(16,1);
+  ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth=1; ctx.stroke();
+  return c;
 }
 
-function RippleBurstCanvas({ onDone }) {
-  const canvasRef = useRef(null);
+// ── Burst particle ────────────────────────────────────────────────────────────
+class BurstParticle {
+  constructor(x, y, imgs) {
+    this.x = x; this.y = y;
+    this.img = imgs[Math.floor(Math.random() * imgs.length)];
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 6;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed - 2.5;
+    this.gravity = 0.04 + Math.random() * 0.04;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotSpeed = (Math.random() - 0.5) * 0.14;
+    this.scale = 0.5 + Math.random() * 1.4;
+    this.alpha = 1;
+    this.decay = 0.006 + Math.random() * 0.007;
+    this.alive = true;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vy += this.gravity; this.vx *= 0.982;
+    this.rotation += this.rotSpeed;
+    this.alpha -= this.decay;
+    if (this.alpha <= 0) this.alive = false;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    ctx.scale(this.scale, this.scale);
+    ctx.drawImage(this.img, -16, -21);
+    ctx.restore();
+  }
+}
 
+// ── CTA Explosion Canvas (swapped in from HomeView) ───────────────────────────
+function CTAExplosionCanvas({ onDone }) {
+  const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width  = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const W = canvas.width, H = canvas.height;
-    const imgs = createBurstLeaves();
-
-    const cx = W / 2, cy = H / 2;
-
-    // ── 8 leaves evenly spread at 45° intervals ───────────────────────────
-    const leaves = Array.from({ length: 8 }, (_, i) => {
-      const angle = (i / 8) * Math.PI * 2;
-      const speed = 8 + Math.random() * 5;
-      return {
-        x: cx, y: cy,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        gravity:  0.06 + Math.random() * 0.04,
-        rotation: angle,
-        rotSpeed: (Math.random() - 0.5) * 0.14,
-        scale:    1.2 + Math.random() * 0.6,
-        alpha:    0,
-        img:      imgs[i % imgs.length],
-      };
-    });
-
-    // ── Ripple rings ──────────────────────────────────────────────────────
-    const ripples = [
-      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.7, speed: 14, delay: 0  },
-      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.5, speed: 11, delay: 8  },
-      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.3, speed: 8,  delay: 16 },
-    ];
-
-    let frame = 0;
-    let overlay = 0;
-    let animId;
-
+    const imgs = LEAF_COLORS.map(makeLeafImg);
+    const cx = W / 2, cy = H / 2 + 80;
+    let particles = Array.from({ length: 140 }, () =>
+      new BurstParticle(cx + (Math.random()-0.5)*W*0.55, cy + (Math.random()-0.5)*30, imgs)
+    );
+    let overlay = 0, frame = 0, animId;
     const draw = () => {
       frame++;
       ctx.clearRect(0, 0, W, H);
-
-      // ── Draw ripple rings ─────────────────────────────────────────────
-      ripples.forEach(rp => {
-        if (frame < rp.delay) return;
-        rp.r = Math.min(rp.maxR, rp.r + rp.speed);
-        const progress = rp.r / rp.maxR;
-        const alpha    = rp.alpha * (1 - progress);
-        if (alpha <= 0) return;
-        ctx.beginPath();
-        ctx.arc(cx, cy, rp.r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255,153,51,${alpha})`;
-        ctx.lineWidth   = 3 * (1 - progress * 0.7);
-        ctx.stroke();
-      });
-
-      // ── Update + draw leaves ──────────────────────────────────────────
-      leaves.forEach(l => {
-        // fade in fast on first few frames
-        if (l.alpha < 1) l.alpha = Math.min(1, l.alpha + 0.25);
-
-        l.x        += l.vx;
-        l.y        += l.vy;
-        l.vy       += l.gravity;
-        l.vx       *= 0.97;
-        l.rotation += l.rotSpeed;
-
-        // start fading after frame 35
-        if (frame > 20) l.alpha = Math.max(0, l.alpha - 0.09);
-        if (l.alpha <= 0) return;
-
-        ctx.save();
-        ctx.globalAlpha = l.alpha;
-        ctx.translate(l.x, l.y);
-        ctx.rotate(l.rotation);
-        ctx.scale(l.scale, l.scale);
-        ctx.drawImage(l.img, -14, -18);
-        ctx.restore();
-      });
-
-      // ── Quick fade to results after frame 50 ─────────────────────────
-      if (frame > 50) {
-        overlay = Math.min(1, overlay + 0.15);
+      particles = particles.filter(p => p.alive);
+      particles.forEach(p => { p.update(); p.draw(ctx); });
+      if (frame > 55) {
+        overlay = Math.min(1, overlay + 0.09);
         ctx.fillStyle = `rgba(240,253,244,${overlay})`;
         ctx.fillRect(0, 0, W, H);
       }
-
       if (overlay >= 1) { cancelAnimationFrame(animId); onDone(); return; }
       animId = requestAnimationFrame(draw);
     };
-
     draw();
     return () => cancelAnimationFrame(animId);
   }, [onDone]);
-
-  return (
-    <canvas ref={canvasRef} style={{
-      position: "fixed", inset: 0, zIndex: 9999,
-      pointerEvents: "none", width: "100%", height: "100%",
-    }} />
-  );
+  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:9999, pointerEvents:"none", width:"100%", height:"100%" }} />;
 }
 
 
@@ -223,11 +186,9 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
       padding: "20px 20px 18px",
       position: "relative",
       overflow: "hidden",
-      // ── POP-IN animation ──
       opacity: mounted ? 1 : 0,
       transform: mounted ? "translateY(0) scale(1)" : "translateY(32px) scale(0.96)",
       transition: "opacity 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
-      // ── Focus lift ──
       boxShadow: isFocused
         ? "0 12px 36px rgba(27,67,50,0.18), 0 0 0 2.5px #FACC15"
         : filled
@@ -265,7 +226,6 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           color: filled || isFocused ? "#FACC15" : "#9ca3af",
           transition: "all 0.3s ease",
           boxShadow: filled || isFocused ? "0 4px 12px rgba(27,67,50,0.25)" : "none",
-          // subtle pulse when focused
           animation: isFocused ? "iconPulse 1.8s ease-in-out infinite" : "none",
         }}>
           {icon}
@@ -290,7 +250,6 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 13, color: "#1a2e22", fontWeight: 900,
           boxShadow: "0 2px 8px rgba(245,158,11,0.4)",
-          // scale in when filled
           transform: filled ? "scale(1) rotate(0deg)" : "scale(0) rotate(-90deg)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}>✓</div>
@@ -314,7 +273,6 @@ export default function FormView({
 
   const [headerVisible, setHeaderVisible] = useState(false);
 
-  // header slides down on mount
   useEffect(() => {
     const t = setTimeout(() => setHeaderVisible(true), 60);
     return () => clearTimeout(t);
@@ -345,7 +303,6 @@ export default function FormView({
     appearance: "none", WebkitAppearance: "none",
   };
 
-  // shared focus/blur handlers
   const onFocus = (field) => setFocusedField(field);
   const onBlur  = () => setFocusedField(null);
 
@@ -359,7 +316,8 @@ export default function FormView({
       overflow: "hidden",
     }}>
 
-      {bursting && <RippleBurstCanvas onDone={onSubmit} />}
+      {/* CTA Explosion — swapped in from HomeView */}
+      {bursting && <CTAExplosionCanvas onDone={onSubmit} />}
 
       {/* ghost wheat — 3 stalks each bottom corner */}
       {[
@@ -381,17 +339,16 @@ export default function FormView({
         </div>
       ))}
 
-      {/* ── Header — slides down on mount ── */}
+      {/* ── Header ── */}
       <div style={{
         background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
         padding: "38px 24px 30px",
         textAlign: "center",
         position: "relative",
         overflow: "hidden",
-        // slide down animation
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
+        transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
       }}>
         {/* dot grid */}
         <div style={{
@@ -406,7 +363,7 @@ export default function FormView({
           background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
         }} />
 
-        {/* corner wheat — 3 on each side, tall with sway */}
+        {/* corner wheat */}
         {[
           { left: -4,  height: 110, opacity: 0.22, flip: false, delay: "0s",   dur: "4s"   },
           { left: 32,  height: 88,  opacity: 0.14, flip: false, delay: "0.7s", dur: "5s"   },
@@ -446,14 +403,13 @@ export default function FormView({
         </div>
       </div>
 
-      {/* ── Fields — staggered pop-in ── */}
+      {/* ── Fields ── */}
       <div style={{
         padding: "20px 16px",
         display: "flex", flexDirection: "column", gap: 14,
         position: "relative", zIndex: 1,
       }}>
 
-        {/* Age — pops in at 200ms */}
         <FieldCard
           icon={<User size={18} />}
           label={t.ageLabel}
@@ -484,7 +440,6 @@ export default function FormView({
           />
         </FieldCard>
 
-        {/* Income — pops in at 380ms */}
         <FieldCard
           icon={<IndianRupee size={18} />}
           label={t.incomeLabel}
@@ -521,7 +476,6 @@ export default function FormView({
           </div>
         </FieldCard>
 
-        {/* Land — pops in at 560ms */}
         <FieldCard
           icon={<Map size={18} />}
           label={t.landLabel}
@@ -560,14 +514,12 @@ export default function FormView({
 
       </div>
 
-      {/* ── Fixed CTA — slides up from bottom ── */}
+      {/* ── Fixed CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
         padding: "10px 16px 22px",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
-        // slides up with delay after last card
-        opacity: 1,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both",
       }}>
         <button

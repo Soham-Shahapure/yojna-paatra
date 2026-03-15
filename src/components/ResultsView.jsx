@@ -14,7 +14,7 @@ const MiniWheat = ({ style }) => (
 );
 
 
-// ── Two leaves slide horizontally from each side ──────────────────────────────
+// ── Two leaves slide from each side, grow to cover screen ────────────────────
 function TwoLeafSlide({ onDone }) {
   const canvasRef = useRef(null);
 
@@ -25,14 +25,18 @@ function TwoLeafSlide({ onDone }) {
     canvas.height = window.innerHeight;
     const W = canvas.width, H = canvas.height;
 
-    const SIZE = Math.min(W, H) * 0.32;
+    // Leaf size grows large enough to cover the full screen
+    // We need the leaf at final scale to be bigger than screen diagonal
+    const DIAGONAL = Math.sqrt(W * W + H * H);
+    const BASE_SIZE = DIAGONAL * 0.72; // base draw size
 
     // Helper: draw a leaf onto an offscreen canvas
     function makeLeaf(color1, color2) {
       const off = document.createElement("canvas");
-      off.width = SIZE; off.height = SIZE * 1.3;
+      off.width  = BASE_SIZE;
+      off.height = BASE_SIZE * 1.3;
       const lc = off.getContext("2d");
-      const lw = SIZE, lh = SIZE * 1.3;
+      const lw = BASE_SIZE, lh = BASE_SIZE * 1.3;
       lc.beginPath();
       lc.moveTo(lw*0.5, lh*0.97);
       lc.bezierCurveTo(lw*0.5, lh*0.97, lw*0.04, lh*0.72, lw*0.04, lh*0.38);
@@ -46,76 +50,78 @@ function TwoLeafSlide({ onDone }) {
       // midrib
       lc.beginPath();
       lc.moveTo(lw*0.5, lh*0.97); lc.lineTo(lw*0.5, lh*0.02);
-      lc.strokeStyle = "rgba(255,255,255,0.3)"; lc.lineWidth = lw*0.022; lc.stroke();
+      lc.strokeStyle = "rgba(255,255,255,0.3)"; lc.lineWidth = lw*0.018; lc.stroke();
       // veins
       [[0.3,0.6],[0.55,0.5],[0.75,0.4]].forEach(([t, vw]) => {
         const vy = lh*t, vwpx = lw*vw*0.42;
         lc.beginPath();
         lc.moveTo(lw*0.5, vy); lc.lineTo(lw*0.5 - vwpx, vy - vwpx*0.22);
         lc.moveTo(lw*0.5, vy); lc.lineTo(lw*0.5 + vwpx, vy - vwpx*0.22);
-        lc.strokeStyle = "rgba(255,255,255,0.18)"; lc.lineWidth = lw*0.012; lc.stroke();
+        lc.strokeStyle = "rgba(255,255,255,0.18)"; lc.lineWidth = lw*0.01; lc.stroke();
       });
       return off;
     }
 
-    const leafL = makeLeaf("#FFCC80", "#FF8C00"); // left leaf — warm orange
-    const leafR = makeLeaf("#FFB347", "#e65c00"); // right leaf — deeper saffron
+    const leafL = makeLeaf("#FFCC80", "#FF8C00"); // left — warm orange
+    const leafR = makeLeaf("#FFB347", "#e65c00"); // right — deeper saffron
 
-    // Vertical positions — left leaf at 35% height, right at 60%
-    const yL = H * 0.35;
-    const yR = H * 0.60;
+    // Leaves anchor at vertical centre of screen
+    const yL = H * 0.38;
+    const yR = H * 0.62;
 
     let progress = 0;
     let animId;
 
-    // ease in-out sine
+    // ease in-out sine — smooth, unhurried
     const ease = t => -(Math.cos(Math.PI * t) - 1) / 2;
 
     const draw = () => {
-      progress += 0.015; // ~1.1s total
+      // ── Speed: 0.012 per frame ≈ ~83 frames ≈ ~1.4 s at 60fps ──────────
+      // (original was 0.06 → ~17 frames → ~0.28 s — this is 5× slower)
+      progress += 0.012;
       if (progress > 1) { cancelAnimationFrame(animId); onDone(); return; }
 
-      // fill with page background so no white flash ever shows
       ctx.fillStyle = "#f0fdf4";
       ctx.fillRect(0, 0, W, H);
+
       const t = ease(progress);
 
-      // opacity: fade in → hold → fade out
+      // ── Opacity: fade in quickly, hold, fade out at end ───────────────
       let alpha;
-      if      (progress < 0.08) alpha = progress / 0.08;
-      else if (progress > 0.88) alpha = 1 - (progress - 0.88) / 0.12;
+      if      (progress < 0.06) alpha = progress / 0.06;
+      else if (progress > 0.85) alpha = 1 - (progress - 0.85) / 0.15;
       else                      alpha = 1;
 
-      // LEFT leaf: enters from left, travels right toward centre
-      // starts at -SIZE, ends at W*0.5 - SIZE*0.3
-      const xL = -SIZE + t * (W + SIZE * 2);
-      // slight counter-clockwise rotation as it slides in
-      const rotL = -0.3 + t * 0.5;
+      // ── Scale: starts small, grows to fully cover screen ─────────────
+      // At t=1 scale reaches ~1.55 so the huge BASE_SIZE leaf fills the frame
+      const scale = 0.18 + t * 1.38;
 
-      // RIGHT leaf: enters from right, travels left toward centre
-      const xR = W + SIZE - t * (W + SIZE * 2);
-      // clockwise rotation
-      const rotR = 0.3 - t * 0.5;
+      // ── LEFT leaf: slides in from left, anchored to upper-centre ─────
+      // starts offscreen left, moves to screen centre-left
+      const xL = -BASE_SIZE * 0.6 + t * (W * 0.42 + BASE_SIZE * 0.6);
+      // gentle CCW tilt that straightens as it arrives
+      const rotL = -0.45 + t * 0.38;
 
-      // scale: grows slightly as they approach centre
-      const scale = 0.75 + t * 0.35;
+      // ── RIGHT leaf: slides in from right, anchored to lower-centre ───
+      const xR = W + BASE_SIZE * 0.6 - t * (W * 0.42 + BASE_SIZE * 0.6);
+      const rotR = 0.45 - t * 0.38;
 
       // Draw left leaf
       ctx.save();
-      ctx.globalAlpha = alpha * 0.9;
+      ctx.globalAlpha = alpha * 0.93;
       ctx.translate(xL, yL);
       ctx.rotate(rotL);
       ctx.scale(scale, scale);
-      ctx.drawImage(leafL, -SIZE*0.5, -SIZE*0.65);
+      ctx.drawImage(leafL, -BASE_SIZE * 0.5, -BASE_SIZE * 0.65);
       ctx.restore();
 
       // Draw right leaf (flipped horizontally)
       ctx.save();
-      ctx.globalAlpha = alpha * 0.9;
+      ctx.globalAlpha = alpha * 0.93;
       ctx.translate(xR, yR);
-      ctx.scale(-scale, scale); // flip horizontally
+      ctx.scale(-scale, scale); // flip
       ctx.rotate(-rotR);
-      ctx.drawImage(leafR, -SIZE*0.5, -SIZE*0.65);
+      ctx.drawImage(leafR, -BASE_SIZE * 0.5, -BASE_SIZE * 0.65);
       ctx.restore();
 
       animId = requestAnimationFrame(draw);
@@ -158,7 +164,6 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
         border: "none", borderRadius: 20,
         padding: "0", cursor: "pointer",
         position: "relative", overflow: "hidden",
-        // pop-in
         opacity: mounted ? 1 : 0,
         transform: mounted
           ? "translateY(0) scale(1)"
@@ -202,7 +207,6 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           }}>
             {scheme.name[language]}
           </h2>
-          {/* eligible badge */}
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
             background: "#f0fdf4", color: "#1B4332",
@@ -216,7 +220,6 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           </span>
         </div>
 
-        {/* benefit amount */}
         <div style={{
           fontSize: 20, fontWeight: 900,
           background: "linear-gradient(135deg, #FF8C00, #FACC15)",
@@ -226,7 +229,6 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           {scheme.benefitAmount[language]}
         </div>
 
-        {/* divider + CTA */}
         <div style={{
           borderTop: "1px solid #f0f0f0", paddingTop: 12,
           display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -234,7 +236,6 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           <span style={{ fontSize: 13, fontWeight: 700, color: "#1B4332" }}>
             {isMarathi ? "माहिती पहा" : "View Details"}
           </span>
-          {/* animated arrow */}
           <div style={{
             width: 30, height: 30, borderRadius: "50%",
             background: "linear-gradient(135deg, #1B4332, #40916c)",
@@ -257,7 +258,8 @@ export default function ResultsView({
   const isMarathi = language === "mr";
   const hasSchemes = eligibleSchemes.length > 0;
   const [headerVisible, setHeaderVisible] = useState(false);
-  const [pendingNav, setPendingNav]         = useState(null); // scheme to navigate to after leaf
+  const [pendingNav, setPendingNav]        = useState(null);
+
   useEffect(() => {
     const t = setTimeout(() => setHeaderVisible(true), 60);
     return () => clearTimeout(t);
@@ -273,7 +275,6 @@ export default function ResultsView({
       overflow: "hidden",
     }}>
 
-      {/* Page-turn leaf — plays over ResultsView before navigating */}
       {pendingNav && (
         <TwoLeafSlide onDone={() => {
           const scheme = pendingNav;
@@ -282,7 +283,7 @@ export default function ResultsView({
         }} />
       )}
 
-      {/* ghost wheat — 3 stalks each bottom corner with sway */}
+      {/* ghost wheat corners */}
       {[
         { bottom: 55, left: -18,  width: 130, height: 200, opacity: 0.055, flip: false, delay: "0s",   dur: "4.5s" },
         { bottom: 50, left: 30,   width: 100, height: 160, opacity: 0.035, flip: false, delay: "0.8s", dur: "5.5s" },
@@ -316,18 +317,15 @@ export default function ResultsView({
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1)",
       }}>
-        {/* dot grid */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.05,
           backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
           backgroundSize: "22px 22px",
         }} />
-        {/* yellow top line */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 3,
           background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
         }} />
-        {/* corner wheat — 3 stalks each side with sway */}
         {[
           { left: -4,  height: 110, opacity: 0.22, flip: false, delay: "0s",   dur: "4s"   },
           { left: 32,  height: 88,  opacity: 0.14, flip: false, delay: "0.7s", dur: "5s"   },
@@ -352,7 +350,6 @@ export default function ResultsView({
         <div style={{ position: "relative", zIndex: 1 }}>
           {hasSchemes ? (
             <>
-              {/* animated check circle */}
               <div style={{
                 width: 64, height: 64, borderRadius: "50%",
                 background: "linear-gradient(135deg, #FACC15, #F59E0B)",
