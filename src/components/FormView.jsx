@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { User, IndianRupee, Map } from "lucide-react";
- 
+
 // ── Leaf canvas factory ───────────────────────────────────────────────────────
 const BURST_COLORS = ["#FF9933","#FFB347","#FF8C00","#FFA500","#FFCC80","#F97316","#FB923C"];
 function createBurstLeaves() {
@@ -18,42 +18,10 @@ function createBurstLeaves() {
     return c;
   });
 }
-class BurstParticle {
-  constructor(x, y, imgs) {
-    this.x = x; this.y = y;
-    this.img = imgs[Math.floor(Math.random() * imgs.length)];
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 4 + Math.random() * 14;
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed - 7;
-    this.gravity = 0.28 + Math.random() * 0.15;
-    this.rotation = Math.random() * Math.PI * 2;
-    this.rotSpeed = (Math.random() - 0.5) * 0.22;
-    this.scale = 0.5 + Math.random() * 1.2;
-    this.alpha = 1;
-    this.decay = 0.009 + Math.random() * 0.013;
-    this.alive = true;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    this.vy += this.gravity; this.vx *= 0.984;
-    this.rotation += this.rotSpeed;
-    this.alpha -= this.decay;
-    if (this.alpha <= 0) this.alive = false;
-  }
-  draw(ctx) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, this.alpha);
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rotation);
-    ctx.scale(this.scale, this.scale);
-    ctx.drawImage(this.img, -14, -18);
-    ctx.restore();
-  }
-}
+
 function RippleBurstCanvas({ onDone }) {
   const canvasRef = useRef(null);
- 
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -61,9 +29,9 @@ function RippleBurstCanvas({ onDone }) {
     canvas.height = window.innerHeight;
     const W = canvas.width, H = canvas.height;
     const imgs = createBurstLeaves();
- 
+
     const cx = W / 2, cy = H / 2;
- 
+
     // ── 8 leaves evenly spread at 45° intervals ───────────────────────────
     const leaves = Array.from({ length: 8 }, (_, i) => {
       const angle = (i / 8) * Math.PI * 2;
@@ -80,22 +48,22 @@ function RippleBurstCanvas({ onDone }) {
         img:      imgs[i % imgs.length],
       };
     });
- 
+
     // ── Ripple rings ──────────────────────────────────────────────────────
     const ripples = [
       { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.7, speed: 14, delay: 0  },
       { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.5, speed: 11, delay: 8  },
       { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.3, speed: 8,  delay: 16 },
     ];
- 
+
     let frame = 0;
     let overlay = 0;
     let animId;
- 
+
     const draw = () => {
       frame++;
       ctx.clearRect(0, 0, W, H);
- 
+
       // ── Draw ripple rings ─────────────────────────────────────────────
       ripples.forEach(rp => {
         if (frame < rp.delay) return;
@@ -109,22 +77,22 @@ function RippleBurstCanvas({ onDone }) {
         ctx.lineWidth   = 3 * (1 - progress * 0.7);
         ctx.stroke();
       });
- 
+
       // ── Update + draw leaves ──────────────────────────────────────────
       leaves.forEach(l => {
         // fade in fast on first few frames
         if (l.alpha < 1) l.alpha = Math.min(1, l.alpha + 0.25);
- 
+
         l.x        += l.vx;
         l.y        += l.vy;
         l.vy       += l.gravity;
         l.vx       *= 0.97;
         l.rotation += l.rotSpeed;
- 
+
         // start fading after frame 35
         if (frame > 35) l.alpha = Math.max(0, l.alpha - 0.045);
         if (l.alpha <= 0) return;
- 
+
         ctx.save();
         ctx.globalAlpha = l.alpha;
         ctx.translate(l.x, l.y);
@@ -133,22 +101,22 @@ function RippleBurstCanvas({ onDone }) {
         ctx.drawImage(l.img, -14, -18);
         ctx.restore();
       });
- 
+
       // ── Quick fade to results after frame 50 ─────────────────────────
       if (frame > 50) {
         overlay = Math.min(1, overlay + 0.055);
         ctx.fillStyle = `rgba(240,253,244,${overlay})`;
         ctx.fillRect(0, 0, W, H);
       }
- 
+
       if (overlay >= 1) { cancelAnimationFrame(animId); onDone(); return; }
       animId = requestAnimationFrame(draw);
     };
- 
+
     draw();
     return () => cancelAnimationFrame(animId);
   }, [onDone]);
- 
+
   return (
     <canvas ref={canvasRef} style={{
       position: "fixed", inset: 0, zIndex: 9999,
@@ -156,8 +124,8 @@ function RippleBurstCanvas({ onDone }) {
     }} />
   );
 }
- 
- 
+
+
 const CONTENT = {
   mr: {
     title: "माहिती भरा",
@@ -206,7 +174,7 @@ const CONTENT = {
     complete: "complete",
   },
 };
- 
+
 // ── Tiny wheat SVG watermark ──────────────────────────────────────────────────
 const MiniWheat = ({ style }) => (
   <svg viewBox="0 0 30 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
@@ -218,7 +186,7 @@ const MiniWheat = ({ style }) => (
     <ellipse cx="21" cy="29" rx="3" ry="5"   fill="currentColor" opacity="0.5" transform="rotate(22 21 29)"/>
   </svg>
 );
- 
+
 // ── Animated progress bar ─────────────────────────────────────────────────────
 function ProgressBar({ filled, total }) {
   return (
@@ -237,17 +205,17 @@ function ProgressBar({ filled, total }) {
     </div>
   );
 }
- 
+
 // ── Field card with staggered pop-in ─────────────────────────────────────────
 function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focusedField, fieldKey }) {
   const [mounted, setMounted] = useState(false);
   const isFocused = focusedField === fieldKey;
- 
+
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), animDelay);
     return () => clearTimeout(t);
   }, [animDelay]);
- 
+
   return (
     <div style={{
       background: "#fff",
@@ -266,7 +234,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           ? "0 6px 24px rgba(27,67,50,0.13), 0 0 0 2px rgba(27,67,50,0.15)"
           : "0 2px 12px rgba(0,0,0,0.06)",
     }}>
- 
+
       {/* left accent bar */}
       <div style={{
         position: "absolute", left: 0, top: 0, bottom: 0, width: 4,
@@ -278,7 +246,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
             : "#e5e7eb",
         transition: "background 0.3s ease",
       }} />
- 
+
       {/* faint wheat watermark */}
       <div style={{
         position: "absolute", right: -6, bottom: -10,
@@ -286,7 +254,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
       }}>
         <MiniWheat style={{ width: "100%", height: "auto" }} />
       </div>
- 
+
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingLeft: 8 }}>
         <div style={{
           width: 42, height: 42, borderRadius: 13, flexShrink: 0,
@@ -302,7 +270,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
         }}>
           {icon}
         </div>
- 
+
         <div style={{ flex: 1 }}>
           <div style={{
             fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
@@ -314,7 +282,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           </div>
           <div style={{ fontSize: 15, fontWeight: 800, color: "#1a2e22" }}>{label}</div>
         </div>
- 
+
         {/* animated tick */}
         <div style={{
           width: 26, height: 26, borderRadius: "50%",
@@ -327,12 +295,12 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}>✓</div>
       </div>
- 
+
       <div style={{ paddingLeft: 8 }}>{children}</div>
     </div>
   );
 }
- 
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function FormView({
   userData = { age: "", income: "", land: "" },
@@ -343,28 +311,28 @@ export default function FormView({
   const t = CONTENT[language] || CONTENT.mr;
   const [focusedField, setFocusedField] = useState(null);
   const [bursting, setBursting] = useState(false);
- 
+
   const [headerVisible, setHeaderVisible] = useState(false);
- 
+
   // header slides down on mount
   useEffect(() => {
     const t = setTimeout(() => setHeaderVisible(true), 60);
     return () => clearTimeout(t);
   }, []);
- 
+
   const filledCount = [
     userData.age !== "",
     userData.income !== "",
     userData.land !== "",
   ].filter(Boolean).length;
- 
+
   const allFilled = filledCount === 3;
- 
+
   const handleSubmit = useCallback(() => {
     if (!allFilled) return;
     setBursting(true);
   }, [allFilled]);
- 
+
   const baseInputStyle = {
     width: "100%", borderRadius: 12,
     border: "2px solid #e5e7eb",
@@ -376,11 +344,11 @@ export default function FormView({
     transition: "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
     appearance: "none", WebkitAppearance: "none",
   };
- 
+
   // shared focus/blur handlers
   const onFocus = (field) => setFocusedField(field);
   const onBlur  = () => setFocusedField(null);
- 
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -390,9 +358,9 @@ export default function FormView({
       position: "relative",
       overflow: "hidden",
     }}>
- 
+
       {bursting && <RippleBurstCanvas onDone={onSubmit} />}
- 
+
       {/* ghost wheat — 3 stalks each bottom corner */}
       {[
         { bottom: 60,  left: -18,  width: 120, opacity: 0.045, flip: false },
@@ -412,7 +380,7 @@ export default function FormView({
           <MiniWheat style={{ width: "100%", height: "auto" }} />
         </div>
       ))}
- 
+
       {/* ── Header — slides down on mount ── */}
       <div style={{
         background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
@@ -431,13 +399,13 @@ export default function FormView({
           backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
           backgroundSize: "22px 22px",
         }} />
- 
+
         {/* yellow top line */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 3,
           background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
         }} />
- 
+
         {/* corner wheat — 3 on each side, tall with sway */}
         {[
           { left: -4,  height: 110, opacity: 0.22, flip: false, delay: "0s",   dur: "4s"   },
@@ -459,7 +427,7 @@ export default function FormView({
             <MiniWheat style={{ width: "100%", height: "100%" }} />
           </div>
         ))}
- 
+
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: 26, marginBottom: 8 }}>📋</div>
           <h1 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
@@ -477,14 +445,14 @@ export default function FormView({
           </div>
         </div>
       </div>
- 
+
       {/* ── Fields — staggered pop-in ── */}
       <div style={{
         padding: "20px 16px",
         display: "flex", flexDirection: "column", gap: 14,
         position: "relative", zIndex: 1,
       }}>
- 
+
         {/* Age — pops in at 200ms */}
         <FieldCard
           icon={<User size={18} />}
@@ -515,7 +483,7 @@ export default function FormView({
             }}
           />
         </FieldCard>
- 
+
         {/* Income — pops in at 380ms */}
         <FieldCard
           icon={<IndianRupee size={18} />}
@@ -552,7 +520,7 @@ export default function FormView({
             }}>▼</div>
           </div>
         </FieldCard>
- 
+
         {/* Land — pops in at 560ms */}
         <FieldCard
           icon={<Map size={18} />}
@@ -589,9 +557,9 @@ export default function FormView({
             }}>▼</div>
           </div>
         </FieldCard>
- 
+
       </div>
- 
+
       {/* ── Fixed CTA — slides up from bottom ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
@@ -635,7 +603,7 @@ export default function FormView({
                 : `${3 - filledCount} fields remaining`)}
         </button>
       </div>
- 
+
       {/* ── Keyframes ── */}
       <style>{`
         @keyframes iconPulse {
@@ -655,4 +623,3 @@ export default function FormView({
     </div>
   );
 }
- 

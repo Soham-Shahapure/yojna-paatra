@@ -75,7 +75,9 @@ function TwoLeafSlide({ onDone }) {
       progress += 0.011; // ~1.5s total
       if (progress > 1) { cancelAnimationFrame(animId); onDone(); return; }
 
-      ctx.clearRect(0, 0, W, H);
+      // fill with page background so no white flash ever shows
+      ctx.fillStyle = "#f0fdf4";
+      ctx.fillRect(0, 0, W, H);
       const t = ease(progress);
 
       // opacity: fade in → hold → fade out
@@ -297,9 +299,7 @@ export default function ResultsView({
           color: "#1B4332", opacity: s.opacity,
           pointerEvents: "none", zIndex: 0,
           transformOrigin: "bottom center",
-          transform: s.flip ? "scaleX(-1)" : undefined,
           animation: `${s.flip ? "wheatSwayFlip" : "wheatSway"} ${s.dur} ease-in-out ${s.delay} infinite`,
-          transform: undefined, // handled by keyframe
         }}>
           <MiniWheat style={{ width: "100%", height: "100%" }} />
         </div>

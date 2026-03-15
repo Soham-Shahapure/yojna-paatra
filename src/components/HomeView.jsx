@@ -169,9 +169,14 @@ const CONTENT = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function HomeView({ onStart, language, setLanguage }) {
-  const [visible, setVisible]   = useState(true);
+  const [visible, setVisible] = useState(false);
   const [exploding, setExploding] = useState(false);
   const t = CONTENT[language] || CONTENT.mr;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 80);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCTA = useCallback(() => setExploding(true), []);
 
@@ -257,8 +262,8 @@ export default function HomeView({ onStart, language, setLanguage }) {
       <div style={{
         position: "relative", zIndex: 5, width: "100%", maxWidth: 400,
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(22px)",
-        transition: "opacity 0.75s ease, transform 0.75s ease",
+        transform: visible ? "translateY(0)" : "translateY(110vh)",
+        transition: "opacity 0.7s cubic-bezier(0.34,1.56,0.64,1), transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
         pointerEvents: visible ? "auto" : "none",
       }}>
         <div style={{
