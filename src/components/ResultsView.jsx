@@ -69,6 +69,10 @@ function TwoLeafSlide({ onDone }) {
     const yL = H * 0.38;
     const yR = H * 0.62;
 
+    // ── Paint background IMMEDIATELY so there is never a blank frame ─────
+    ctx.fillStyle = "#f0fdf4";
+    ctx.fillRect(0, 0, W, H);
+
     let progress = 0;
     let animId;
 
@@ -76,8 +80,6 @@ function TwoLeafSlide({ onDone }) {
     const ease = t => -(Math.cos(Math.PI * t) - 1) / 2;
 
     const draw = () => {
-      // ── Speed: 0.012 per frame ≈ ~83 frames ≈ ~1.4 s at 60fps ──────────
-      // (original was 0.06 → ~17 frames → ~0.28 s — this is 5× slower)
       progress += 0.012;
       if (progress > 1) { cancelAnimationFrame(animId); onDone(); return; }
 
@@ -135,6 +137,7 @@ function TwoLeafSlide({ onDone }) {
     <canvas ref={canvasRef} style={{
       position: "fixed", inset: 0, zIndex: 9999,
       pointerEvents: "none", width: "100%", height: "100%",
+      background: "#f0fdf4",
     }} />
   );
 }

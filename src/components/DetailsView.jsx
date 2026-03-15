@@ -55,7 +55,7 @@ export default function DetailsView({ scheme, onBack, language }) {
       fontFamily: "'Noto Serif','Georgia',serif",
       paddingBottom: 110,
       position: "relative",
-      opacity: mounted ? 1 : 0,
+      opacity: 1,
       transition: "opacity 0.35s ease",
     }}>
 
