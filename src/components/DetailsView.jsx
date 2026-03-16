@@ -16,7 +16,7 @@ const MiniWheat = ({ style }) => (
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function DetailsView({ scheme, onBack, language }) {
   const [activeTab, setActiveTab] = useState("documents");
-  const [mounted, setMounted]     = useState(false);
+  const [, setMounted]     = useState(false);
   const isMarathi = language === "mr";
 
   useEffect(() => {
