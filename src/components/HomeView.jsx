@@ -47,108 +47,143 @@ const LogoMark = () => (
 
 // ── Falling leaves config ─────────────────────────────────────────────────────
 const LEAVES = [
-  { id:0,  left:"2%",   size:15, duration:11, delay:0,    drift:55,   rot:320,  color:"#FF9933" },
-  { id:1,  left:"8%",   size:20, duration:15, delay:4,    drift:40,   rot:-280, color:"#FFB347" },
-  { id:2,  left:"13%",  size:12, duration:9,  delay:7,    drift:70,   rot:440,  color:"#FF8C00" },
-  { id:3,  left:"22%",  size:18, duration:13, delay:2,    drift:-45,  rot:-360, color:"#FFA500" },
-  { id:4,  left:"31%",  size:14, duration:10, delay:9,    drift:60,   rot:290,  color:"#FF9933" },
-  { id:5,  left:"42%",  size:22, duration:16, delay:1,    drift:-55,  rot:-410, color:"#FFB347" },
-  { id:6,  left:"51%",  size:11, duration:8,  delay:5.5,  drift:80,   rot:500,  color:"#FFCC80" },
-  { id:7,  left:"62%",  size:19, duration:14, delay:3,    drift:-70,  rot:-330, color:"#FF8C00" },
-  { id:8,  left:"71%",  size:13, duration:10, delay:8,    drift:50,   rot:370,  color:"#FFA500" },
-  { id:9,  left:"80%",  size:21, duration:12, delay:0.5,  drift:-60,  rot:-420, color:"#FF9933" },
-  { id:10, left:"88%",  size:16, duration:9,  delay:6,    drift:45,   rot:310,  color:"#FFB347" },
-  { id:11, left:"94%",  size:24, duration:17, delay:2.5,  drift:-35,  rot:-260, color:"#FF8C00" },
-  { id:12, left:"17%",  size:10, duration:8,  delay:11,   drift:65,   rot:480,  color:"#FFCC80" },
-  { id:13, left:"56%",  size:17, duration:13, delay:3.5,  drift:-50,  rot:-300, color:"#FF9933" },
-  { id:14, left:"76%",  size:13, duration:11, delay:7.5,  drift:55,   rot:340,  color:"#FFA500" },
+  { id:0,  left:"2%",   size:15, duration:16, delay:0,    drift:55,   rot:320,  color:"#FF9933" },
+  { id:1,  left:"8%",   size:20, duration:19, delay:4,    drift:40,   rot:-280, color:"#FFB347" },
+  { id:2,  left:"13%",  size:12, duration:14, delay:7,    drift:70,   rot:440,  color:"#FF8C00" },
+  { id:3,  left:"22%",  size:18, duration:17, delay:2,    drift:-45,  rot:-360, color:"#FFA500" },
+  { id:4,  left:"31%",  size:14, duration:15, delay:9,    drift:60,   rot:290,  color:"#FF9933" },
+  { id:5,  left:"42%",  size:22, duration:21, delay:1,    drift:-55,  rot:-410, color:"#FFB347" },
+  { id:6,  left:"51%",  size:11, duration:13, delay:5.5,  drift:80,   rot:500,  color:"#FFCC80" },
+  { id:7,  left:"62%",  size:19, duration:18, delay:3,    drift:-70,  rot:-330, color:"#FF8C00" },
+  { id:8,  left:"71%",  size:13, duration:15, delay:8,    drift:50,   rot:370,  color:"#FFA500" },
+  { id:9,  left:"80%",  size:21, duration:17, delay:0.5,  drift:-60,  rot:-420, color:"#FF9933" },
+  { id:10, left:"88%",  size:16, duration:14, delay:6,    drift:45,   rot:310,  color:"#FFB347" },
+  { id:11, left:"94%",  size:24, duration:22, delay:2.5,  drift:-35,  rot:-260, color:"#FF8C00" },
+  { id:12, left:"17%",  size:10, duration:13, delay:11,   drift:65,   rot:480,  color:"#FFCC80" },
+  { id:13, left:"56%",  size:17, duration:18, delay:3.5,  drift:-50,  rot:-300, color:"#FF9933" },
+  { id:14, left:"76%",  size:13, duration:16, delay:7.5,  drift:55,   rot:340,  color:"#FFA500" },
 ];
 
 // ── Canvas leaf colors ────────────────────────────────────────────────────────
 const LEAF_COLORS = ["#FF9933","#FFB347","#FF8C00","#FFA500","#FFCC80","#F97316","#FB923C","#FDBA74"];
 
-function makeLeafImg(color) {
-  const c = document.createElement("canvas");
-  c.width = 32; c.height = 42;
-  const ctx = c.getContext("2d");
-  ctx.beginPath();
-  ctx.moveTo(16,40); ctx.bezierCurveTo(16,40,2,30,2,17);
-  ctx.bezierCurveTo(2,8,8,1,16,1);
-  ctx.bezierCurveTo(24,1,30,8,30,17);
-  ctx.bezierCurveTo(30,30,16,40,16,40);
-  ctx.fillStyle = color; ctx.fill();
-  ctx.beginPath(); ctx.moveTo(16,40); ctx.lineTo(16,1);
-  ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth=1; ctx.stroke();
-  return c;
+function createBurstLeaves() {
+  return LEAF_COLORS.map(color => {
+    const c = document.createElement("canvas");
+    c.width = 28; c.height = 36;
+    const ctx = c.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(14,34); ctx.bezierCurveTo(14,34,2,26,2,15);
+    ctx.bezierCurveTo(2,7,7,1,14,1); ctx.bezierCurveTo(21,1,26,7,26,15);
+    ctx.bezierCurveTo(26,26,14,34,14,34);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(14,34); ctx.lineTo(14,1);
+    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 1; ctx.stroke();
+    return c;
+  });
 }
 
-// ── Burst particle ────────────────────────────────────────────────────────────
-class BurstParticle {
-  constructor(x, y, imgs) {
-    this.x = x; this.y = y;
-    this.img = imgs[Math.floor(Math.random() * imgs.length)];
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 5 + Math.random() * 10;
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed - 4;
-    this.gravity = 0.08 + Math.random() * 0.07;
-    this.rotation = Math.random() * Math.PI * 2;
-    this.rotSpeed = (Math.random() - 0.5) * 0.28;
-    this.scale = 0.5 + Math.random() * 1.4;
-    this.alpha = 1;
-    this.decay = 0.012 + Math.random() * 0.014;
-    this.alive = true;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    this.vy += this.gravity; this.vx *= 0.982;
-    this.rotation += this.rotSpeed;
-    this.alpha -= this.decay;
-    if (this.alpha <= 0) this.alive = false;
-  }
-  draw(ctx) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, this.alpha);
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rotation);
-    ctx.scale(this.scale, this.scale);
-    ctx.drawImage(this.img, -16, -21);
-    ctx.restore();
-  }
-}
-
-// ── CTA Explosion canvas (same as first HomeView) ─────────────────────────────
-function CTAExplosionCanvas({ onDone }) {
+// ── Ripple Burst Canvas (swapped in from FormView) ────────────────────────────
+function RippleBurstCanvas({ onDone }) {
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
+    canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
     const W = canvas.width, H = canvas.height;
-    const imgs = LEAF_COLORS.map(makeLeafImg);
-    const cx = W / 2, cy = H / 2 + 80;
-    let particles = Array.from({ length: 140 }, () =>
-      new BurstParticle(cx + (Math.random()-0.5)*W*0.55, cy + (Math.random()-0.5)*30, imgs)
-    );
-    let overlay = 0, frame = 0, animId;
+    const imgs = createBurstLeaves();
+
+    const cx = W / 2, cy = H / 2;
+
+    // ── 8 leaves evenly spread at 45° intervals ───────────────────────────
+    const leaves = Array.from({ length: 8 }, (_, i) => {
+      const angle = (i / 8) * Math.PI * 2;
+      const speed = 8 + Math.random() * 5;
+      return {
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        gravity:  0.06 + Math.random() * 0.04,
+        rotation: angle,
+        rotSpeed: (Math.random() - 0.5) * 0.14,
+        scale:    1.2 + Math.random() * 0.6,
+        alpha:    0,
+        img:      imgs[i % imgs.length],
+      };
+    });
+
+    // ── Ripple rings ──────────────────────────────────────────────────────
+    const ripples = [
+      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.7, speed: 14, delay: 0  },
+      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.5, speed: 11, delay: 8  },
+      { r: 0, maxR: Math.max(W, H) * 0.75, alpha: 0.3, speed: 8,  delay: 16 },
+    ];
+
+    let frame = 0;
+    let overlay = 0;
+    let animId;
+
     const draw = () => {
       frame++;
       ctx.clearRect(0, 0, W, H);
-      particles = particles.filter(p => p.alive);
-      particles.forEach(p => { p.update(); p.draw(ctx); });
-      if (frame > 25) {
-        overlay = Math.min(1, overlay + 0.18);
+
+      // ── Draw ripple rings ─────────────────────────────────────────────
+      ripples.forEach(rp => {
+        if (frame < rp.delay) return;
+        rp.r = Math.min(rp.maxR, rp.r + rp.speed);
+        const progress = rp.r / rp.maxR;
+        const alpha    = rp.alpha * (1 - progress);
+        if (alpha <= 0) return;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rp.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,153,51,${alpha})`;
+        ctx.lineWidth   = 3 * (1 - progress * 0.7);
+        ctx.stroke();
+      });
+
+      // ── Update + draw leaves ──────────────────────────────────────────
+      leaves.forEach(l => {
+        if (l.alpha < 1) l.alpha = Math.min(1, l.alpha + 0.25);
+        l.x        += l.vx;
+        l.y        += l.vy;
+        l.vy       += l.gravity;
+        l.vx       *= 0.97;
+        l.rotation += l.rotSpeed;
+        if (frame > 20) l.alpha = Math.max(0, l.alpha - 0.09);
+        if (l.alpha <= 0) return;
+
+        ctx.save();
+        ctx.globalAlpha = l.alpha;
+        ctx.translate(l.x, l.y);
+        ctx.rotate(l.rotation);
+        ctx.scale(l.scale, l.scale);
+        ctx.drawImage(l.img, -14, -18);
+        ctx.restore();
+      });
+
+      // ── Quick fade to results after frame 50 ─────────────────────────
+      if (frame > 50) {
+        overlay = Math.min(1, overlay + 0.15);
         ctx.fillStyle = `rgba(240,253,244,${overlay})`;
         ctx.fillRect(0, 0, W, H);
       }
+
       if (overlay >= 1) { cancelAnimationFrame(animId); onDone(); return; }
       animId = requestAnimationFrame(draw);
     };
+
     draw();
     return () => cancelAnimationFrame(animId);
   }, [onDone]);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:9999, pointerEvents:"none", width:"100%", height:"100%" }} />;
+
+  return (
+    <canvas ref={canvasRef} style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      pointerEvents: "none", width: "100%", height: "100%",
+    }} />
+  );
 }
 
 // ── Bilingual content ─────────────────────────────────────────────────────────
@@ -242,7 +277,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
         </div>
       ))}
 
-      {/* Falling leaves */}
+      {/* Falling leaves — unchanged durations */}
       {LEAVES.map(leaf => (
         <div key={leaf.id} style={{
           position: "absolute", top: "-55px", left: leaf.left,
@@ -255,15 +290,15 @@ export default function HomeView({ onStart, language, setLanguage }) {
         </div>
       ))}
 
-      {/* Ripple burst on CTA */}
-      {exploding && <CTAExplosionCanvas onDone={onStart} />}
+      {/* Ripple burst on CTA — swapped from FormView */}
+      {exploding && <RippleBurstCanvas onDone={onStart} />}
 
       {/* Card */}
       <div style={{
         position: "relative", zIndex: 5, width: "100%", maxWidth: 400,
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(110vh)",
-        transition: "opacity 0.6s cubic-bezier(0.34,1.56,0.64,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1)",
+        transition: "opacity 0.75s ease, transform 0.75s ease",
         pointerEvents: visible ? "auto" : "none",
       }}>
         <div style={{
