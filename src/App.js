@@ -8,7 +8,7 @@ import ResultsView from "./components/ResultsView";
 import DetailsView from "./components/DetailsView";
 
 const VIEWS = { HOME: "HOME", FORM: "FORM", RESULTS: "RESULTS", DETAILS: "DETAILS" };
-const INITIAL_USER_DATA = { age: "", income: "<1L", land: "None" };
+const INITIAL_USER_DATA = { age: "", income: "", land: "" };
 
 export default function App() {
   const [currentView, setCurrentView]     = useState(VIEWS.HOME);
