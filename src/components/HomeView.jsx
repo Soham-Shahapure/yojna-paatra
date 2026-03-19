@@ -277,6 +277,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           color:"#FF9933", opacity:s.opacity, transformOrigin:"bottom center",
           animation:`wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
           pointerEvents:"none",
+          willChange: "transform" // 👈 Added performance optimization
         }}>
           <WheatStalk style={{ width:"100%", height:"100%" }} />
         </div>
@@ -293,6 +294,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           transform:"scaleX(-1)",
           animation:`wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
           pointerEvents:"none",
+          willChange: "transform" // 👈 Added performance optimization
         }}>
           <WheatStalk style={{ width:"100%", height:"100%" }} />
         </div>
@@ -306,6 +308,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           zIndex:3, pointerEvents:"none",
           animation:`leafFall ${leaf.duration}s linear ${leaf.delay}s infinite`,
           "--drift":`${leaf.drift}px`, "--rot":`${leaf.rot}deg`,
+          willChange: "transform, opacity" // 👈 Added performance optimization
         }}>
           <LeafSVG color={leaf.color} />
         </div>
@@ -323,6 +326,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           ? "opacity 0.7s cubic-bezier(0.34,1.46,0.64,1), transform 0.7s cubic-bezier(0.34,1.46,0.64,1)"
           : "none",
         pointerEvents: cardVisible ? "auto" : "none",
+        willChange: cardVisible ? "auto" : "transform, opacity" // 👈 Added conditional performance optimization
       }}>
         <div style={{
           background:"#ffffff", borderRadius:22,

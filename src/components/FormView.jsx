@@ -194,6 +194,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
         : filled
           ? "0 6px 24px rgba(27,67,50,0.13), 0 0 0 2px rgba(27,67,50,0.15)"
           : "0 2px 12px rgba(0,0,0,0.06)",
+      willChange: mounted ? "auto" : "transform, opacity" // 👈 Added performance optimization
     }}>
 
       {/* left accent bar */}
@@ -252,6 +253,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
           boxShadow: "0 2px 8px rgba(245,158,11,0.4)",
           transform: filled ? "scale(1) rotate(0deg)" : "scale(0) rotate(-90deg)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          willChange: "transform" // 👈 Added performance optimization
         }}>✓</div>
       </div>
 
@@ -349,6 +351,7 @@ export default function FormView({
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        willChange: headerVisible ? "auto" : "transform, opacity" // 👈 Added performance optimization
       }}>
         {/* dot grid */}
         <div style={{
@@ -380,6 +383,7 @@ export default function FormView({
             transformOrigin: "bottom center",
             animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
             pointerEvents: "none",
+            willChange: "transform" // 👈 Added performance optimization
           }}>
             <MiniWheat style={{ width: "100%", height: "100%" }} />
           </div>
@@ -521,6 +525,7 @@ export default function FormView({
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both",
+        willChange: "transform, opacity" // 👈 Added performance optimization
       }}>
         <button
           onClick={handleSubmit}
@@ -531,6 +536,7 @@ export default function FormView({
             e.currentTarget.style.boxShadow = "0 16px 40px rgba(250,204,21,0.5)";
           }}
           onMouseLeave={e => {
+            if (!allFilled) return;
             e.currentTarget.style.transform = "translateY(0) scale(1)";
             e.currentTarget.style.boxShadow = allFilled
               ? "0 6px 20px rgba(250,204,21,0.3)" : "none";

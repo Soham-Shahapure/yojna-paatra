@@ -75,6 +75,7 @@ export default function DetailsView({ scheme, onBack, language }) {
           pointerEvents: "none", zIndex: 0,
           transformOrigin: "bottom center",
           animation: `${s.flip ? "wheatSwayFlip" : "wheatSway"} ${s.dur} ease-in-out ${s.delay} infinite`,
+          willChange: "transform" // 👈 Added performance optimization
         }}>
           <MiniWheat style={{ width: "100%", height: "100%" }} />
         </div>
@@ -114,6 +115,7 @@ export default function DetailsView({ scheme, onBack, language }) {
               transformOrigin: "bottom center",
               animation: `wheatSwayFlip ${s.dur} ease-in-out ${s.delay} infinite`,
               pointerEvents: "none",
+              willChange: "transform" // 👈 Added performance optimization
             }}>
               <MiniWheat style={{ width: "100%", height: "100%" }} />
             </div>
@@ -201,6 +203,7 @@ export default function DetailsView({ scheme, onBack, language }) {
                   background: "#fff", borderRadius: 16, padding: "14px 16px",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
                   animation: `detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i*80}ms both`,
+                  willChange: "transform, opacity" // 👈 Added performance optimization
                 }}>
                   <CheckCircle2 size={18} style={{ color: "#1B4332", marginTop: 2, flexShrink: 0 }} />
                   <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6 }}>{item}</span>
@@ -217,6 +220,7 @@ export default function DetailsView({ scheme, onBack, language }) {
                 background: "#fff", boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                 textDecoration: "none",
                 animation: "detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both",
+                willChange: "transform, opacity" // 👈 Added performance optimization
               }}>
               <div style={{
                 aspectRatio: "16/9", display: "flex", alignItems: "center", justifyContent: "center",
@@ -260,6 +264,7 @@ export default function DetailsView({ scheme, onBack, language }) {
                   background: "#fff", borderRadius: 16, padding: "16px",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
                   animation: `detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i*100}ms both`,
+                  willChange: "transform, opacity" // 👈 Added performance optimization
                 }}>
                   <div style={{
                     width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
@@ -289,7 +294,6 @@ export default function DetailsView({ scheme, onBack, language }) {
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
       }}>
-        {/* NEW: Changed from <a> tag to <button> to trigger the interceptor modal */}
         <button 
           onClick={() => setGovLinkWarning(scheme?.officialLink || "#")}
           style={{

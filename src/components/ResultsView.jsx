@@ -176,6 +176,7 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           ? "0 2px 8px rgba(0,0,0,0.08)"
           : "0 4px 18px rgba(0,0,0,0.08)",
         fontFamily: "'Noto Serif','Georgia',serif",
+        willChange: mounted ? "auto" : "transform, opacity" // 👈 Added performance optimization
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = "translateY(-2px) scale(1.005)";
@@ -304,6 +305,7 @@ export default function ResultsView({
           pointerEvents: "none", zIndex: 0,
           transformOrigin: "bottom center",
           animation: `${s.flip ? "wheatSwayFlip" : "wheatSway"} ${s.dur} ease-in-out ${s.delay} infinite`,
+          willChange: "transform" // 👈 Added performance optimization
         }}>
           <MiniWheat style={{ width: "100%", height: "100%" }} />
         </div>
@@ -319,6 +321,7 @@ export default function ResultsView({
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1)",
+        willChange: headerVisible ? "auto" : "transform, opacity" // 👈 Added performance optimization
       }}>
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.05,
@@ -345,6 +348,7 @@ export default function ResultsView({
             transformOrigin: "bottom center",
             animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
             pointerEvents: "none",
+            willChange: "transform" // 👈 Added performance optimization
           }}>
             <MiniWheat style={{ width: "100%", height: "100%" }} />
           </div>
@@ -360,6 +364,7 @@ export default function ResultsView({
                 margin: "0 auto 14px",
                 boxShadow: "0 0 0 8px rgba(250,204,21,0.15), 0 8px 24px rgba(250,204,21,0.35)",
                 animation: "resultsBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both",
+                willChange: "transform, opacity" // 👈 Added performance optimization
               }}>
                 <CheckCircle size={32} color="#1a2e22" strokeWidth={2.5} />
               </div>
@@ -421,6 +426,7 @@ export default function ResultsView({
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s both",
+        willChange: "transform, opacity" // 👈 Added performance optimization
       }}>
         <button
           onClick={onReset}
