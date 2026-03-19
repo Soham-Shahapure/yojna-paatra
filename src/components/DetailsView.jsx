@@ -17,6 +17,7 @@ const MiniWheat = ({ style }) => (
 export default function DetailsView({ scheme, onBack, language }) {
   const [activeTab, setActiveTab] = useState("documents");
   const [, setMounted]     = useState(false);
+  const [govLinkWarning, setGovLinkWarning] = useState(null); // <-- NEW: State for the interceptor modal
   const isMarathi = language === "mr";
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function DetailsView({ scheme, onBack, language }) {
             background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
           }}/>
 
-          {/* ── 3 wheat stalks on RIGHT only, varied heights with sway ── */}
+          {/* ── 3 wheat stalks on RIGHT only ── */}
           {[
             { right: -6,  height: 112, width: 46, opacity: 0.22, delay: "0s",   dur: "4.5s" },
             { right: 32,  height: 84,  width: 35, opacity: 0.15, delay: "0.7s", dur: "5.2s" },
@@ -288,23 +289,73 @@ export default function DetailsView({ scheme, onBack, language }) {
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
       }}>
-        <a href={scheme?.officialLink || "#"} target="_blank" rel="noopener noreferrer"
+        {/* NEW: Changed from <a> tag to <button> to trigger the interceptor modal */}
+        <button 
+          onClick={() => setGovLinkWarning(scheme?.officialLink || "#")}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             width: "100%", padding: "16px",
             background: "linear-gradient(135deg, #FF8C00, #e05500)",
             color: "#fff", fontWeight: 900, fontSize: 16,
-            borderRadius: 14, textDecoration: "none",
+            borderRadius: 14, border: "none", cursor: "pointer", 
             fontFamily: "inherit", letterSpacing: "0.04em",
             boxShadow: "0 6px 20px rgba(255,140,0,0.38)",
+            transition: "transform 0.2s ease, box-shadow 0.2s ease",
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 36px rgba(255,140,0,0.52)"; }}
           onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(255,140,0,0.38)"; }}
         >
           {isMarathi ? "अधिकृत वेबसाईटवर अर्ज करा" : "Apply on Official Website"}
           <ExternalLink size={18} />
-        </a>
+        </button>
       </div>
+
+      {/* ── Gov Link Interceptor Modal ── */}
+      {govLinkWarning && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 99999,
+          background: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "20px"
+        }}>
+          <div style={{
+            background: "#fff", borderRadius: "16px", padding: "32px",
+            maxWidth: "400px", width: "100%", textAlign: "center",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.2)"
+          }}>
+            <div style={{ fontSize: "40px", marginBottom: "16px" }}>⚠️</div>
+            <h3 style={{ margin: "0 0 12px", color: "#1a2e22", fontSize: "20px", fontWeight: "800" }}>
+              {language === "mr" ? "कृपया लक्ष द्या" : "Heads Up!"}
+            </h3>
+            <p style={{ margin: "0 0 24px", color: "#6b8f7a", fontSize: "15px", lineHeight: "1.5" }}>
+              {language === "mr" 
+                ? "सरकारी वेबसाइट्स अनेकदा संथ असतात किंवा देखभालीसाठी बंद असतात. जर लिंक उघडली नाही, तर कृपया परत या आणि त्याऐवजी व्हिडिओ ट्यूटोरियल पहा!" 
+                : "Government websites are often slow or down for maintenance. If the page fails to load, simply come back here and watch the video tutorial instead!"}
+            </p>
+            <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
+              <button 
+                onClick={() => {
+                  window.open(govLinkWarning, "_blank", "noopener,noreferrer");
+                  setGovLinkWarning(null);
+                }}
+                style={{
+                  padding: "14px", borderRadius: "8px", border: "none",
+                  background: "#1B4332", color: "#fff", fontWeight: "bold", cursor: "pointer", fontFamily: "inherit"
+                }}>
+                {language === "mr" ? "पुढे जा" : "Proceed to Portal"}
+              </button>
+              <button 
+                onClick={() => setGovLinkWarning(null)}
+                style={{
+                  padding: "14px", borderRadius: "8px", border: "1px solid #c8d8ce",
+                  background: "transparent", color: "#6b8f7a", fontWeight: "bold", cursor: "pointer", fontFamily: "inherit"
+                }}>
+                {language === "mr" ? "रद्द करा" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes detailPopIn {
