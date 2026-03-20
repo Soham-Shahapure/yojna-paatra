@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">YojnaPaatra</string>
+    <string name="title_activity_main">YojnaPaatra</string>
+    <string name="package_name">com.cep.yojnapaatra</string>
+    <string name="custom_url_scheme">com.cep.yojnapaatra</string>
+</resources>
