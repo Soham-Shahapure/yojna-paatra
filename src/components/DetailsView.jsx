@@ -17,7 +17,7 @@ const MiniWheat = ({ style }) => (
 export default function DetailsView({ scheme, onBack, language }) {
   const [activeTab, setActiveTab] = useState("documents");
   const [, setMounted]     = useState(false);
-  const [govLinkWarning, setGovLinkWarning] = useState(null); // <-- NEW: State for the interceptor modal
+  const [govLinkWarning, setGovLinkWarning] = useState(null); 
   const isMarathi = language === "mr";
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function DetailsView({ scheme, onBack, language }) {
       minHeight: "100vh",
       background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
       fontFamily: "'Noto Serif','Georgia',serif",
-      paddingBottom: 110,
+      paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       opacity: 1,
       transition: "opacity 0.35s ease",
@@ -75,7 +75,7 @@ export default function DetailsView({ scheme, onBack, language }) {
           pointerEvents: "none", zIndex: 0,
           transformOrigin: "bottom center",
           animation: `${s.flip ? "wheatSwayFlip" : "wheatSway"} ${s.dur} ease-in-out ${s.delay} infinite`,
-          willChange: "transform" // 👈 Added performance optimization
+          willChange: "transform" 
         }}>
           <MiniWheat style={{ width: "100%", height: "100%" }} />
         </div>
@@ -87,7 +87,7 @@ export default function DetailsView({ scheme, onBack, language }) {
         {/* ── Header ── */}
         <div style={{
           background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
-          padding: "36px 20px 24px",
+          padding: "clamp(28px, 6vw, 36px) clamp(16px, 4vw, 24px) clamp(20px, 5vw, 24px)",
           position: "relative", overflow: "hidden",
         }}>
           {/* dot grid */}
@@ -115,7 +115,7 @@ export default function DetailsView({ scheme, onBack, language }) {
               transformOrigin: "bottom center",
               animation: `wheatSwayFlip ${s.dur} ease-in-out ${s.delay} infinite`,
               pointerEvents: "none",
-              willChange: "transform" // 👈 Added performance optimization
+              willChange: "transform" 
             }}>
               <MiniWheat style={{ width: "100%", height: "100%" }} />
             </div>
@@ -126,9 +126,9 @@ export default function DetailsView({ scheme, onBack, language }) {
             <button onClick={onBack} style={{
               display: "flex", alignItems: "center", gap: 6,
               background: "rgba(255,255,255,0.12)", border: "none",
-              borderRadius: 10, padding: "8px 14px", cursor: "pointer",
-              color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: 13,
-              fontFamily: "inherit", marginBottom: 16,
+              borderRadius: 10, padding: "clamp(6px, 2vw, 8px) clamp(10px, 3vw, 14px)", cursor: "pointer",
+              color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: "clamp(12px, 3.5vw, 13px)",
+              fontFamily: "inherit", marginBottom: "clamp(12px, 4vw, 16px)",
               transition: "background 0.2s ease",
             }}
             onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
@@ -138,7 +138,7 @@ export default function DetailsView({ scheme, onBack, language }) {
             </button>
 
             <h1 style={{
-              fontSize: "clamp(18px,4.5vw,26px)", fontWeight: 900,
+              fontSize: "clamp(20px, 6vw, 28px)", fontWeight: 900,
               color: "#fff", lineHeight: 1.25, margin: "0 0 16px",
             }}>
               {scheme?.name?.[language]}
@@ -148,13 +148,13 @@ export default function DetailsView({ scheme, onBack, language }) {
             <div style={{
               display: "inline-block",
               background: "linear-gradient(135deg, #FACC15, #F59E0B)",
-              borderRadius: 12, padding: "10px 20px",
+              borderRadius: 12, padding: "clamp(8px, 2.5vw, 12px) clamp(16px, 5vw, 24px)",
               boxShadow: "0 4px 16px rgba(250,204,21,0.4)",
             }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2e22", letterSpacing: "0.08em", marginBottom: 2 }}>
+              <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", fontWeight: 700, color: "#1a2e22", letterSpacing: "0.08em", marginBottom: 2 }}>
                 {isMarathi ? "मुख्य लाभ" : "MAIN BENEFIT"}
               </div>
-              <div style={{ fontSize: 22, fontWeight: 900, color: "#1a2e22" }}>
+              <div style={{ fontSize: "clamp(20px, 6vw, 26px)", fontWeight: 900, color: "#1a2e22" }}>
                 {scheme?.benefitAmount?.[language]}
               </div>
             </div>
@@ -162,9 +162,9 @@ export default function DetailsView({ scheme, onBack, language }) {
         </div>
 
         {/* ── Tab bar ── */}
-        <div style={{ padding: "16px 16px 8px" }}>
+        <div style={{ padding: "clamp(12px, 3.5vw, 16px) clamp(12px, 3.5vw, 16px) clamp(6px, 2vw, 8px)" }}>
           <div style={{
-            display: "flex", gap: 6,
+            display: "flex", gap: "clamp(4px, 1vw, 6px)",
             background: "#e8f0eb", borderRadius: 16, padding: 5,
           }}>
             {TABS.map(tab => {
@@ -173,14 +173,14 @@ export default function DetailsView({ scheme, onBack, language }) {
               return (
                 <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
                   flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                  padding: "11px 4px", borderRadius: 12, border: "none",
-                  fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit",
+                  padding: "clamp(8px, 2.5vw, 12px) 4px", borderRadius: 12, border: "none",
+                  fontWeight: 700, fontSize: "clamp(11px, 3vw, 13px)", cursor: "pointer", fontFamily: "inherit",
                   transition: "all 0.22s ease",
                   background: active ? "#1B4332" : "transparent",
                   color:       active ? "#FACC15" : "#6b8f7a",
                   boxShadow:   active ? "0 3px 10px rgba(27,67,50,0.3)" : "none",
                 }}>
-                  <Icon size={14} />
+                  <Icon size={"clamp(12px, 3.5vw, 14px)"} />
                   {tab.label}
                 </button>
               );
@@ -189,24 +189,24 @@ export default function DetailsView({ scheme, onBack, language }) {
         </div>
 
         {/* ── Tab content ── */}
-        <div style={{ padding: "8px 16px" }}>
+        <div style={{ padding: "clamp(6px, 2vw, 10px) clamp(12px, 3.5vw, 16px)" }}>
 
           {/* Documents */}
           {activeTab === "documents" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>
+              <p style={{ fontSize: "clamp(14px, 4vw, 16px)", fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>
                 {isMarathi ? "आवश्यक कागदपत्रे" : "Required Documents"}
               </p>
               {scheme?.checklist?.[language]?.map((item, i) => (
                 <div key={i} style={{
                   display: "flex", alignItems: "flex-start", gap: 12,
-                  background: "#fff", borderRadius: 16, padding: "14px 16px",
+                  background: "#fff", borderRadius: 16, padding: "clamp(12px, 3.5vw, 14px) clamp(14px, 4vw, 16px)",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
                   animation: `detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i*80}ms both`,
-                  willChange: "transform, opacity" // 👈 Added performance optimization
+                  willChange: "transform, opacity" 
                 }}>
                   <CheckCircle2 size={18} style={{ color: "#1B4332", marginTop: 2, flexShrink: 0 }} />
-                  <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6 }}>{item}</span>
+                  <span style={{ fontSize: "clamp(13px, 3.5vw, 15px)", color: "#374151", lineHeight: 1.6 }}>{item}</span>
                 </div>
               ))}
             </div>
@@ -220,7 +220,7 @@ export default function DetailsView({ scheme, onBack, language }) {
                 background: "#fff", boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                 textDecoration: "none",
                 animation: "detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both",
-                willChange: "transform, opacity" // 👈 Added performance optimization
+                willChange: "transform, opacity" 
               }}>
               <div style={{
                 aspectRatio: "16/9", display: "flex", alignItems: "center", justifyContent: "center",
@@ -228,22 +228,22 @@ export default function DetailsView({ scheme, onBack, language }) {
                 flexDirection: "column", gap: 12,
               }}>
                 <div style={{
-                  width: 64, height: 64, borderRadius: "50%",
+                  width: "clamp(50px, 12vw, 64px)", height: "clamp(50px, 12vw, 64px)", borderRadius: "50%",
                   background: "linear-gradient(135deg, #FF8C00, #FACC15)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   boxShadow: "0 8px 24px rgba(255,140,0,0.4)",
                 }}>
-                  <Play size={28} color="#1a2e22" fill="#1a2e22" style={{ marginLeft: 3 }} />
+                  <Play size={"clamp(22px, 6vw, 28px)"} color="#1a2e22" fill="#1a2e22" style={{ marginLeft: 3 }} />
                 </div>
-                <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 600 }}>
+                <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 600 }}>
                   {isMarathi ? "व्हिडिओ पहा" : "Watch Video"}
                 </span>
               </div>
-              <div style={{ padding: "16px 18px" }}>
-                <p style={{ fontSize: 16, fontWeight: 900, color: "#1B4332", margin: "0 0 6px" }}>
+              <div style={{ padding: "clamp(14px, 4vw, 16px) clamp(16px, 4.5vw, 18px)" }}>
+                <p style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 900, color: "#1B4332", margin: "0 0 6px" }}>
                   {isMarathi ? "योजना कशी लागू करावी" : "How to Apply for this Scheme"}
                 </p>
-                <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: "clamp(12px, 3.5vw, 14px)", color: "#6b7280", lineHeight: 1.6, margin: 0 }}>
                   {isMarathi
                     ? "या व्हिडिओमध्ये अर्ज प्रक्रिया स्टेप-बाय-स्टेप समजावून सांगितली आहे."
                     : "This video explains the application process step-by-step."}
@@ -255,29 +255,29 @@ export default function DetailsView({ scheme, onBack, language }) {
           {/* Apply steps */}
           {activeTab === "apply" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>
+              <p style={{ fontSize: "clamp(14px, 4vw, 16px)", fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>
                 {isMarathi ? "ऑनलाइन अर्ज करण्याची प्रक्रिया" : "Online Application Process"}
               </p>
               {APPLY_STEPS.map((item, i) => (
                 <div key={item.step} style={{
                   display: "flex", alignItems: "flex-start", gap: 14,
-                  background: "#fff", borderRadius: 16, padding: "16px",
+                  background: "#fff", borderRadius: 16, padding: "clamp(14px, 4vw, 16px)",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
                   animation: `detailPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i*100}ms both`,
-                  willChange: "transform, opacity" // 👈 Added performance optimization
+                  willChange: "transform, opacity" 
                 }}>
                   <div style={{
-                    width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+                    width: "clamp(34px, 10vw, 42px)", height: "clamp(34px, 10vw, 42px)", borderRadius: "50%", flexShrink: 0,
                     background: "linear-gradient(135deg, #1B4332, #40916c)",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 16, fontWeight: 900, color: "#FACC15",
+                    fontSize: "clamp(14px, 4vw, 18px)", fontWeight: 900, color: "#FACC15",
                     boxShadow: "0 4px 12px rgba(27,67,50,0.28)",
                   }}>
                     {isMarathi ? ["१","२","३"][i] : item.step}
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>{item.title}</p>
-                    <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>{item.description}</p>
+                    <p style={{ fontSize: "clamp(13px, 3.5vw, 15px)", fontWeight: 800, color: "#1a2e22", margin: "0 0 4px" }}>{item.title}</p>
+                    <p style={{ fontSize: "clamp(12px, 3.5vw, 14px)", color: "#6b7280", lineHeight: 1.6, margin: 0 }}>{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -290,7 +290,7 @@ export default function DetailsView({ scheme, onBack, language }) {
       {/* ── Sticky apply CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
-        padding: "10px 16px 22px",
+        padding: "clamp(8px, 2vw, 10px) clamp(12px, 3.5vw, 16px) clamp(16px, 5vw, 22px)",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
       }}>
@@ -298,9 +298,9 @@ export default function DetailsView({ scheme, onBack, language }) {
           onClick={() => setGovLinkWarning(scheme?.officialLink || "#")}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            width: "100%", padding: "16px",
+            width: "100%", padding: "clamp(12px, 3.5vw, 16px)",
             background: "linear-gradient(135deg, #FF8C00, #e05500)",
-            color: "#fff", fontWeight: 900, fontSize: 16,
+            color: "#fff", fontWeight: 900, fontSize: "clamp(14px, 4vw, 16px)",
             borderRadius: 14, border: "none", cursor: "pointer", 
             fontFamily: "inherit", letterSpacing: "0.04em",
             boxShadow: "0 6px 20px rgba(255,140,0,0.38)",
@@ -310,7 +310,7 @@ export default function DetailsView({ scheme, onBack, language }) {
           onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(255,140,0,0.38)"; }}
         >
           {isMarathi ? "अधिकृत वेबसाईटवर अर्ज करा" : "Apply on Official Website"}
-          <ExternalLink size={18} />
+          <ExternalLink size={"clamp(16px, 4vw, 20px)"} />
         </button>
       </div>
 
@@ -323,15 +323,15 @@ export default function DetailsView({ scheme, onBack, language }) {
           padding: "20px"
         }}>
           <div style={{
-            background: "#fff", borderRadius: "16px", padding: "32px",
+            background: "#fff", borderRadius: "16px", padding: "clamp(20px, 6vw, 32px)",
             maxWidth: "400px", width: "100%", textAlign: "center",
             boxShadow: "0 20px 40px rgba(0,0,0,0.2)"
           }}>
-            <div style={{ fontSize: "40px", marginBottom: "16px" }}>⚠️</div>
-            <h3 style={{ margin: "0 0 12px", color: "#1a2e22", fontSize: "20px", fontWeight: "800" }}>
+            <div style={{ fontSize: "clamp(32px, 10vw, 48px)", marginBottom: "16px" }}>⚠️</div>
+            <h3 style={{ margin: "0 0 12px", color: "#1a2e22", fontSize: "clamp(18px, 5vw, 24px)", fontWeight: "800" }}>
               {language === "mr" ? "कृपया लक्ष द्या" : "Heads Up!"}
             </h3>
-            <p style={{ margin: "0 0 24px", color: "#6b8f7a", fontSize: "15px", lineHeight: "1.5" }}>
+            <p style={{ margin: "0 0 24px", color: "#6b8f7a", fontSize: "clamp(13px, 3.5vw, 16px)", lineHeight: "1.5" }}>
               {language === "mr" 
                 ? "सरकारी वेबसाइट्स अनेकदा संथ असतात किंवा देखभालीसाठी बंद असतात. जर लिंक उघडली नाही, तर कृपया परत या आणि त्याऐवजी व्हिडिओ ट्यूटोरियल पहा!" 
                 : "Government websites are often slow or down for maintenance. If the page fails to load, simply come back here and watch the video tutorial instead!"}
@@ -343,7 +343,7 @@ export default function DetailsView({ scheme, onBack, language }) {
                   setGovLinkWarning(null);
                 }}
                 style={{
-                  padding: "14px", borderRadius: "8px", border: "none",
+                  padding: "clamp(12px, 3.5vw, 14px)", borderRadius: "8px", border: "none",
                   background: "#1B4332", color: "#fff", fontWeight: "bold", cursor: "pointer", fontFamily: "inherit"
                 }}>
                 {language === "mr" ? "पुढे जा" : "Proceed to Portal"}
@@ -351,7 +351,7 @@ export default function DetailsView({ scheme, onBack, language }) {
               <button 
                 onClick={() => setGovLinkWarning(null)}
                 style={{
-                  padding: "14px", borderRadius: "8px", border: "1px solid #c8d8ce",
+                  padding: "clamp(12px, 3.5vw, 14px)", borderRadius: "8px", border: "1px solid #c8d8ce",
                   background: "transparent", color: "#6b8f7a", fontWeight: "bold", cursor: "pointer", fontFamily: "inherit"
                 }}>
                 {language === "mr" ? "रद्द करा" : "Cancel"}

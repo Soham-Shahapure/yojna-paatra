@@ -26,7 +26,6 @@ function TwoLeafSlide({ onDone }) {
     const W = canvas.width, H = canvas.height;
 
     // Leaf size grows large enough to cover the full screen
-    // We need the leaf at final scale to be bigger than screen diagonal
     const DIAGONAL = Math.sqrt(W * W + H * H);
     const BASE_SIZE = DIAGONAL * 0.72; // base draw size
 
@@ -88,23 +87,16 @@ function TwoLeafSlide({ onDone }) {
 
       const t = ease(progress);
 
-      // ── Opacity: fade in quickly, hold, fade out at end ───────────────
       let alpha;
       if      (progress < 0.06) alpha = progress / 0.06;
       else if (progress > 0.85) alpha = 1 - (progress - 0.85) / 0.15;
       else                      alpha = 1;
 
-      // ── Scale: starts small, grows to fully cover screen ─────────────
-      // At t=1 scale reaches ~1.55 so the huge BASE_SIZE leaf fills the frame
       const scale = 0.18 + t * 1.38;
 
-      // ── LEFT leaf: slides in from left, anchored to upper-centre ─────
-      // starts offscreen left, moves to screen centre-left
       const xL = -BASE_SIZE * 0.6 + t * (W * 0.42 + BASE_SIZE * 0.6);
-      // gentle CCW tilt that straightens as it arrives
       const rotL = -0.45 + t * 0.38;
 
-      // ── RIGHT leaf: slides in from right, anchored to lower-centre ───
       const xR = W + BASE_SIZE * 0.6 - t * (W * 0.42 + BASE_SIZE * 0.6);
       const rotR = 0.45 - t * 0.38;
 
@@ -176,7 +168,7 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           ? "0 2px 8px rgba(0,0,0,0.08)"
           : "0 4px 18px rgba(0,0,0,0.08)",
         fontFamily: "'Noto Serif','Georgia',serif",
-        willChange: mounted ? "auto" : "transform, opacity" // 👈 Added performance optimization
+        willChange: mounted ? "auto" : "transform, opacity"
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = "translateY(-2px) scale(1.005)";
@@ -194,19 +186,19 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
         borderRadius: "20px 0 0 20px",
       }} />
 
-      {/* faint wheat watermark */}
+{/* faint wheat watermark */}
       <div style={{
         position: "absolute", right: -4, bottom: -8,
-        width: 48, color: "#1B4332", opacity: 0.04, pointerEvents: "none",
+        width: "clamp(38px, 11vw, 48px)", color: "#1B4332", opacity: 0.04, pointerEvents: "none",
       }}>
         <MiniWheat style={{ width: "100%", height: "auto" }} />
       </div>
 
-      <div style={{ padding: "18px 18px 16px 22px" }}>
+      <div style={{ padding: "clamp(14px, 4vw, 18px) clamp(14px, 4vw, 18px) clamp(12px, 3.5vw, 16px) clamp(16px, 4.5vw, 22px)" }}>
         {/* top row */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
           <h2 style={{
-            fontSize: 16, fontWeight: 900, color: "#1a2e22",
+            fontSize: "clamp(14px, 4.5vw, 18px)", fontWeight: 900, color: "#1a2e22",
             lineHeight: 1.3, flex: 1, margin: 0,
           }}>
             {scheme.name[language]}
@@ -214,18 +206,18 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 4,
             background: "#f0fdf4", color: "#1B4332",
-            fontSize: 11, fontWeight: 800,
-            padding: "4px 10px", borderRadius: 999,
+            fontSize: "clamp(9px, 2.5vw, 11px)", fontWeight: 800,
+            padding: "clamp(2px, 1vw, 4px) clamp(8px, 2vw, 10px)", borderRadius: 999,
             border: "1px solid rgba(27,67,50,0.15)",
             flexShrink: 0, marginTop: 2,
           }}>
-            <CheckCircle size={12} />
+            <CheckCircle size={"clamp(10px, 2.5vw, 12px)"} />
             {isMarathi ? "पात्र" : "Eligible"}
           </span>
         </div>
 
         <div style={{
-          fontSize: 20, fontWeight: 900,
+          fontSize: "clamp(18px, 5.5vw, 24px)", fontWeight: 900,
           background: "linear-gradient(135deg, #FF8C00, #FACC15)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
           backgroundClip: "text", marginBottom: 12,
@@ -237,14 +229,14 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
           borderTop: "1px solid #f0f0f0", paddingTop: 12,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#1B4332" }}>
+          <span style={{ fontSize: "clamp(11px, 3.5vw, 14px)", fontWeight: 700, color: "#1B4332" }}>
             {isMarathi ? "माहिती पहा" : "View Details"}
           </span>
           <div style={{
-            width: 30, height: 30, borderRadius: "50%",
+            width: "clamp(24px, 7vw, 30px)", height: "clamp(24px, 7vw, 30px)", borderRadius: "50%",
             background: "linear-gradient(135deg, #1B4332, #40916c)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#FACC15", fontSize: 14, fontWeight: 900,
+            color: "#FACC15", fontSize: "clamp(12px, 3.5vw, 14px)", fontWeight: 900,
           }}>→</div>
         </div>
       </div>
@@ -274,7 +266,7 @@ export default function ResultsView({
       minHeight: "100vh",
       background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
       fontFamily: "'Noto Serif','Georgia',serif",
-      paddingBottom: 110,
+      paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       overflow: "hidden",
     }}>
@@ -305,7 +297,7 @@ export default function ResultsView({
           pointerEvents: "none", zIndex: 0,
           transformOrigin: "bottom center",
           animation: `${s.flip ? "wheatSwayFlip" : "wheatSway"} ${s.dur} ease-in-out ${s.delay} infinite`,
-          willChange: "transform" // 👈 Added performance optimization
+          willChange: "transform"
         }}>
           <MiniWheat style={{ width: "100%", height: "100%" }} />
         </div>
@@ -314,14 +306,14 @@ export default function ResultsView({
       {/* ── Header banner ── */}
       <div style={{
         background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
-        padding: "36px 24px 28px",
+        padding: "clamp(28px, 6vw, 36px) clamp(16px, 4vw, 24px) clamp(20px, 5vw, 28px)",
         textAlign: "center",
         position: "relative",
         overflow: "hidden",
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1)",
-        willChange: headerVisible ? "auto" : "transform, opacity" // 👈 Added performance optimization
+        willChange: headerVisible ? "auto" : "transform, opacity" 
       }}>
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.05,
@@ -348,7 +340,7 @@ export default function ResultsView({
             transformOrigin: "bottom center",
             animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
             pointerEvents: "none",
-            willChange: "transform" // 👈 Added performance optimization
+            willChange: "transform" 
           }}>
             <MiniWheat style={{ width: "100%", height: "100%" }} />
           </div>
@@ -358,42 +350,42 @@ export default function ResultsView({
           {hasSchemes ? (
             <>
               <div style={{
-                width: 64, height: 64, borderRadius: "50%",
+                width: "clamp(50px, 12vw, 64px)", height: "clamp(50px, 12vw, 64px)", borderRadius: "50%",
                 background: "linear-gradient(135deg, #FACC15, #F59E0B)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 14px",
                 boxShadow: "0 0 0 8px rgba(250,204,21,0.15), 0 8px 24px rgba(250,204,21,0.35)",
                 animation: "resultsBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both",
-                willChange: "transform, opacity" // 👈 Added performance optimization
+                willChange: "transform, opacity" 
               }}>
-                <CheckCircle size={32} color="#1a2e22" strokeWidth={2.5} />
+                <CheckCircle size={"clamp(24px, 6vw, 32px)"} color="#1a2e22" strokeWidth={2.5} />
               </div>
               <h1 style={{
-                fontSize: 20, fontWeight: 900, color: "#fff",
+                fontSize: "clamp(18px, 5vw, 24px)", fontWeight: 900, color: "#fff",
                 margin: "0 0 6px", lineHeight: 1.3,
               }}>
                 {isMarathi ? "अभिनंदन! " : "Congratulations! "}
                 <span style={{ color: "#FACC15" }}>{eligibleSchemes.length}</span>
                 {isMarathi ? " योजना सापडल्या 🎉" : " schemes found 🎉"}
               </h1>
-              <p style={{ fontSize: 13, color: "rgba(200,235,216,0.72)", margin: 0 }}>
+              <p style={{ fontSize: "clamp(11px, 3.5vw, 14px)", color: "rgba(200,235,216,0.72)", margin: 0 }}>
                 {isMarathi ? "खालील योजनांची माहिती पहा" : "Tap any scheme to view full details"}
               </p>
             </>
           ) : (
             <>
               <div style={{
-                width: 64, height: 64, borderRadius: "50%",
+                width: "clamp(50px, 12vw, 64px)", height: "clamp(50px, 12vw, 64px)", borderRadius: "50%",
                 background: "rgba(255,255,255,0.1)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 14px", color: "rgba(255,255,255,0.5)",
               }}>
-                <Frown size={32} strokeWidth={1.8} />
+                <Frown size={"clamp(24px, 6vw, 32px)"} strokeWidth={1.8} />
               </div>
-              <h1 style={{ fontSize: 20, fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
+              <h1 style={{ fontSize: "clamp(18px, 5vw, 24px)", fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
                 {isMarathi ? "सध्या कोणतीही योजना सापडली नाही" : "No schemes found"}
               </h1>
-              <p style={{ fontSize: 13, color: "rgba(200,235,216,0.6)", margin: 0 }}>
+              <p style={{ fontSize: "clamp(11px, 3.5vw, 14px)", color: "rgba(200,235,216,0.6)", margin: 0 }}>
                 {isMarathi ? "तुमची माहिती तपासून पुन्हा प्रयत्न करा" : "Check your details and try again"}
               </p>
             </>
@@ -403,8 +395,8 @@ export default function ResultsView({
 
       {/* ── Scheme cards ── */}
       <div style={{
-        padding: "20px 16px",
-        display: "flex", flexDirection: "column", gap: 14,
+        padding: "clamp(12px, 3vw, 20px) clamp(12px, 3vw, 16px)",
+        display: "flex", flexDirection: "column", gap: "clamp(10px, 2.5vw, 14px)",
         position: "relative", zIndex: 1,
       }}>
         {eligibleSchemes.map((scheme, i) => (
@@ -422,11 +414,11 @@ export default function ResultsView({
       {/* ── Fixed reset CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
-        padding: "10px 16px 22px",
+        padding: "clamp(8px, 2vw, 10px) clamp(12px, 3.5vw, 16px) clamp(16px, 5vw, 22px)",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s both",
-        willChange: "transform, opacity" // 👈 Added performance optimization
+        willChange: "transform, opacity" 
       }}>
         <button
           onClick={onReset}
@@ -439,9 +431,9 @@ export default function ResultsView({
             e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
           }}
           style={{
-            width: "100%", padding: "15px",
+            width: "100%", padding: "clamp(12px, 3.5vw, 15px)",
             background: "#fff",
-            color: "#1B4332", fontWeight: 900, fontSize: 15,
+            color: "#1B4332", fontWeight: 900, fontSize: "clamp(13px, 4vw, 15px)",
             border: "2px solid rgba(27,67,50,0.15)",
             borderRadius: 14, cursor: "pointer",
             fontFamily: "inherit", letterSpacing: "0.03em",
@@ -449,7 +441,7 @@ export default function ResultsView({
             boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
             transition: "transform 0.2s ease, box-shadow 0.2s ease",
           }}>
-          <RotateCcw size={16} />
+          <RotateCcw size={"clamp(14px, 3.5vw, 16px)"} />
           {isMarathi ? "पुन्हा तपासा" : "Check Again"}
         </button>
       </div>

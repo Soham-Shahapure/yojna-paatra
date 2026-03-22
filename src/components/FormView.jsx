@@ -153,11 +153,11 @@ const MiniWheat = ({ style }) => (
 // ── Animated progress bar ─────────────────────────────────────────────────────
 function ProgressBar({ filled, total }) {
   return (
-    <div style={{ display: "flex", gap: 6, justifyContent: "center", alignItems: "center" }}>
+    <div style={{ display: "flex", gap: "clamp(4px, 1.5vw, 6px)", justifyContent: "center", alignItems: "center" }}>
       {Array.from({ length: total }).map((_, i) => (
         <div key={i} style={{
-          height: 5, borderRadius: 99,
-          width: i < filled ? 28 : 8,
+          height: "clamp(4px, 1.5vw, 5px)", borderRadius: 99,
+          width: i < filled ? "clamp(20px, 6vw, 28px)" : "clamp(6px, 2vw, 8px)",
           background: i < filled
             ? "linear-gradient(90deg, #FACC15, #F59E0B)"
             : "rgba(255,255,255,0.2)",
@@ -183,7 +183,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
     <div style={{
       background: "#fff",
       borderRadius: 20,
-      padding: "20px 20px 18px",
+      padding: "clamp(14px, 4vw, 20px) clamp(14px, 4vw, 20px) clamp(12px, 3.5vw, 18px)",
       position: "relative",
       overflow: "hidden",
       opacity: mounted ? 1 : 0,
@@ -194,7 +194,7 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
         : filled
           ? "0 6px 24px rgba(27,67,50,0.13), 0 0 0 2px rgba(27,67,50,0.15)"
           : "0 2px 12px rgba(0,0,0,0.06)",
-      willChange: mounted ? "auto" : "transform, opacity" // 👈 Added performance optimization
+      willChange: mounted ? "auto" : "transform, opacity" 
     }}>
 
       {/* left accent bar */}
@@ -212,14 +212,14 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
       {/* faint wheat watermark */}
       <div style={{
         position: "absolute", right: -6, bottom: -10,
-        width: 52, color: "#1B4332", opacity: 0.04, pointerEvents: "none",
+        width: "clamp(40px, 12vw, 52px)", color: "#1B4332", opacity: 0.04, pointerEvents: "none",
       }}>
         <MiniWheat style={{ width: "100%", height: "auto" }} />
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, paddingLeft: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 3vw, 12px)", marginBottom: "clamp(10px, 3.5vw, 14px)", paddingLeft: 8 }}>
         <div style={{
-          width: 42, height: 42, borderRadius: 13, flexShrink: 0,
+          width: "clamp(34px, 10vw, 42px)", height: "clamp(34px, 10vw, 42px)", borderRadius: 13, flexShrink: 0,
           background: filled || isFocused
             ? "linear-gradient(135deg, #1B4332, #40916c)"
             : "#f3f4f6",
@@ -234,26 +234,26 @@ function FieldCard({ icon, label, stepLabel, filled, children, animDelay, focuse
 
         <div style={{ flex: 1 }}>
           <div style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+            fontSize: "clamp(9px, 2.5vw, 10px)", fontWeight: 800, letterSpacing: "0.1em",
             textTransform: "uppercase", marginBottom: 2,
             color: filled || isFocused ? "#F59E0B" : "#9ca3af",
             transition: "color 0.3s ease",
           }}>
             {stepLabel}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1a2e22" }}>{label}</div>
+          <div style={{ fontSize: "clamp(13px, 4vw, 15px)", fontWeight: 800, color: "#1a2e22" }}>{label}</div>
         </div>
 
         {/* animated tick */}
         <div style={{
-          width: 26, height: 26, borderRadius: "50%",
+          width: "clamp(22px, 6vw, 26px)", height: "clamp(22px, 6vw, 26px)", borderRadius: "50%",
           background: "linear-gradient(135deg, #FACC15, #F59E0B)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, color: "#1a2e22", fontWeight: 900,
+          fontSize: "clamp(11px, 3vw, 13px)", color: "#1a2e22", fontWeight: 900,
           boxShadow: "0 2px 8px rgba(245,158,11,0.4)",
           transform: filled ? "scale(1) rotate(0deg)" : "scale(0) rotate(-90deg)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-          willChange: "transform" // 👈 Added performance optimization
+          willChange: "transform" 
         }}>✓</div>
       </div>
 
@@ -297,8 +297,8 @@ export default function FormView({
     width: "100%", borderRadius: 12,
     border: "2px solid #e5e7eb",
     background: "#f9fafb",
-    padding: "13px 16px",
-    fontSize: 16, fontWeight: 700,
+    padding: "clamp(10px, 3.5vw, 13px) clamp(12px, 4vw, 16px)",
+    fontSize: "clamp(14px, 4vw, 16px)", fontWeight: 700,
     color: "#1a2e22", fontFamily: "inherit",
     outline: "none", boxSizing: "border-box",
     transition: "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
@@ -313,7 +313,7 @@ export default function FormView({
       minHeight: "100vh",
       background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
       fontFamily: "'Noto Serif', 'Georgia', serif",
-      paddingBottom: 110,
+      paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       overflow: "hidden",
     }}>
@@ -344,14 +344,14 @@ export default function FormView({
       {/* ── Header ── */}
       <div style={{
         background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
-        padding: "38px 24px 30px",
+        padding: "clamp(28px, 6vw, 38px) clamp(16px, 4vw, 24px) clamp(20px, 5vw, 30px)",
         textAlign: "center",
         position: "relative",
         overflow: "hidden",
         opacity: headerVisible ? 1 : 0,
         transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
         transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
-        willChange: headerVisible ? "auto" : "transform, opacity" // 👈 Added performance optimization
+        willChange: headerVisible ? "auto" : "transform, opacity" 
       }}>
         {/* dot grid */}
         <div style={{
@@ -383,23 +383,23 @@ export default function FormView({
             transformOrigin: "bottom center",
             animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
             pointerEvents: "none",
-            willChange: "transform" // 👈 Added performance optimization
+            willChange: "transform" 
           }}>
             <MiniWheat style={{ width: "100%", height: "100%" }} />
           </div>
         ))}
 
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 26, marginBottom: 8 }}>📋</div>
-          <h1 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
+          <div style={{ fontSize: "clamp(20px, 6vw, 26px)", marginBottom: 8 }}>📋</div>
+          <h1 style={{ fontSize: "clamp(18px, 5vw, 22px)", fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
             {t.title}
           </h1>
-          <p style={{ fontSize: 13, color: "rgba(200,235,216,0.72)", margin: "0 0 20px" }}>
+          <p style={{ fontSize: "clamp(11px, 3vw, 13px)", color: "rgba(200,235,216,0.72)", margin: "0 0 20px" }}>
             {t.subtitle}
           </p>
           <ProgressBar filled={filledCount} total={3} />
           <div style={{
-            fontSize: 11, color: "rgba(250,204,21,0.7)",
+            fontSize: "clamp(10px, 2.5vw, 11px)", color: "rgba(250,204,21,0.7)",
             marginTop: 8, fontWeight: 700, letterSpacing: "0.06em",
           }}>
             {filledCount} / 3 {t.complete}
@@ -409,8 +409,8 @@ export default function FormView({
 
       {/* ── Fields ── */}
       <div style={{
-        padding: "20px 16px",
-        display: "flex", flexDirection: "column", gap: 14,
+        padding: "clamp(12px, 3vw, 20px) clamp(12px, 3vw, 16px)",
+        display: "flex", flexDirection: "column", gap: "clamp(10px, 2.5vw, 14px)",
         position: "relative", zIndex: 1,
       }}>
 
@@ -461,7 +461,7 @@ export default function FormView({
               onBlur={onBlur}
               style={{
                 ...baseInputStyle,
-                paddingRight: 40,
+                paddingRight: "clamp(30px, 8vw, 40px)",
                 borderColor: focusedField === "income"
                   ? "#FACC15"
                   : userData.income ? "#1B4332" : "#e5e7eb",
@@ -474,7 +474,7 @@ export default function FormView({
               {t.incomeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
             <div style={{
-              position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+              position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
               pointerEvents: "none", color: "#9ca3af", fontSize: 11,
             }}>▼</div>
           </div>
@@ -497,7 +497,7 @@ export default function FormView({
               onBlur={onBlur}
               style={{
                 ...baseInputStyle,
-                paddingRight: 40,
+                paddingRight: "clamp(30px, 8vw, 40px)",
                 borderColor: focusedField === "land"
                   ? "#FACC15"
                   : userData.land ? "#1B4332" : "#e5e7eb",
@@ -510,7 +510,7 @@ export default function FormView({
               {t.landOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
             <div style={{
-              position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+              position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
               pointerEvents: "none", color: "#9ca3af", fontSize: 11,
             }}>▼</div>
           </div>
@@ -521,11 +521,11 @@ export default function FormView({
       {/* ── Fixed CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
-        padding: "10px 16px 22px",
+        padding: "clamp(8px, 2vw, 10px) clamp(12px, 3.5vw, 16px) clamp(16px, 5vw, 22px)",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both",
-        willChange: "transform, opacity" // 👈 Added performance optimization
+        willChange: "transform, opacity" 
       }}>
         <button
           onClick={handleSubmit}
@@ -542,12 +542,12 @@ export default function FormView({
               ? "0 6px 20px rgba(250,204,21,0.3)" : "none";
           }}
           style={{
-            width: "100%", padding: "16px",
+            width: "100%", padding: "clamp(12px, 3.5vw, 16px)",
             background: allFilled
               ? "linear-gradient(135deg, #FACC15 0%, #F59E0B 100%)"
               : "#e5e7eb",
             color: allFilled ? "#1a2e22" : "#9ca3af",
-            fontWeight: 900, fontSize: 16,
+            fontWeight: 900, fontSize: "clamp(14px, 4vw, 16px)",
             border: "none", borderRadius: 14,
             cursor: allFilled ? "pointer" : "not-allowed",
             fontFamily: "inherit", letterSpacing: "0.04em",

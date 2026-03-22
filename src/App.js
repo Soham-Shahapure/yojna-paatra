@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { App as CapacitorApp } from '@capacitor/app'; // 👈 1. Import Capacitor App plugin
+
 import schemes from "./data/schemes";
 import { getEligibleSchemes } from "./utils/filterLogic";
 
@@ -16,6 +18,37 @@ export default function App() {
   const [eligibleSchemes, setEligibleSchemes] = useState([]);
   const [selectedScheme, setSelectedScheme]   = useState(null);
   const [language, setLanguage]           = useState("mr");
+
+  // 👈 2. Hardware Back Button Interceptor
+  useEffect(() => {
+    let listener = null;
+
+    const setupBackButton = async () => {
+      listener = await CapacitorApp.addListener('backButton', () => {
+        // We use the 'prev' callback inside setCurrentView to guarantee 
+        // we always have the exact, current state of the screen
+        setCurrentView(prevView => {
+          if (prevView === VIEWS.HOME) {
+            // If they are on the Home screen, let the phone exit the app safely
+            CapacitorApp.exitApp();
+            return prevView; 
+          }
+          if (prevView === VIEWS.FORM) return VIEWS.HOME;
+          if (prevView === VIEWS.RESULTS) return VIEWS.FORM;
+          if (prevView === VIEWS.DETAILS) return VIEWS.RESULTS;
+          
+          return prevView;
+        });
+      });
+    };
+
+    setupBackButton();
+
+    // Cleanup the listener if the component unmounts
+    return () => {
+      if (listener) listener.remove();
+    };
+  }, []);
 
   const handleFormChange = (field, value) =>
     setUserData(prev => ({ ...prev, [field]: value }));
