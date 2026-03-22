@@ -1,18 +1,21 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 
 // ── Cinematic Intro Logo (Recreated from your uploaded image) ─────────────────
+// ── Cinematic Intro Logo (Responsive Fix) ─────────────────
 const IntroLogo = () => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px' }}>
-    {/* The 3D Green Circle */}
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(16px, 4vw, 28px)' }}>
+    
+    {/* The 3D Green Circle - Now scales dynamically! */}
     <div style={{
-      width: 140, height: 140,
+      width: 'clamp(100px, 30vw, 140px)', 
+      height: 'clamp(100px, 30vw, 140px)',
       borderRadius: '50%',
       background: 'linear-gradient(145deg, #184430, #2c7150)',
       boxShadow: '0 0 0 10px #f4f7f5, 0 15px 35px rgba(0,0,0,0.15), inset 0 5px 15px rgba(0,0,0,0.2)',
       display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
-      {/* Plant Icon */}
-      <svg viewBox="0 0 60 80" width="55" height="75" fill="white">
+      {/* Plant Icon - SVG scales automatically */}
+      <svg viewBox="0 0 60 80" width="45%" height="65%" fill="white">
         <rect x="28" y="16" width="4" height="54" rx="2" />
         <ellipse cx="30" cy="16" rx="7" ry="12" />
         <ellipse cx="16" cy="30" rx="6" ry="11" transform="rotate(-40 16 30)" />
@@ -24,17 +27,18 @@ const IntroLogo = () => (
       </svg>
     </div>
 
-    {/* Typography Section */}
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-      <div style={{ width: 45, height: 1.5, background: '#a0b3a6' }} />
+    {/* Typography Section - Prevents breaking and shrinks lines */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 3vw, 16px)', flexWrap: 'nowrap' }}>
+      <div style={{ width: 'clamp(20px, 10vw, 45px)', height: 1.5, background: '#a0b3a6' }} />
       <span style={{
         fontFamily: "'Noto Serif', 'Georgia', serif",
         fontWeight: 800,
-        fontSize: 26,
+        fontSize: 'clamp(18px, 6vw, 26px)', // Automatically shrinks on small phones
         letterSpacing: '0.15em',
-        color: '#1a4331'
+        color: '#1a4331',
+        whiteSpace: 'nowrap' // Absolutely prevents word wrapping
       }}>YOJNA-PAATRA</span>
-      <div style={{ width: 45, height: 1.5, background: '#a0b3a6' }} />
+      <div style={{ width: 'clamp(20px, 10vw, 45px)', height: 1.5, background: '#a0b3a6' }} />
     </div>
   </div>
 );
