@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
-// ── Cinematic Intro Logo (Recreated from your uploaded image) ─────────────────
 // ── Cinematic Intro Logo (Responsive Fix) ─────────────────
 const IntroLogo = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(16px, 4vw, 28px)' }}>
@@ -82,8 +81,8 @@ const LeafSVG = ({ color }) => (
 );
 
 const FALLING_LEAVES = [
-  { id:0,  left:"2%",   size:15, duration:11, delay:0,   drift:55,  rot:320,  color:"#FF9933" },
-  { id:1,  left:"8%",   size:20, duration:15, delay:4,   drift:40,  rot:-280, color:"#FFB347" },
+  { id:0,  left:"2%",  size:15, duration:11, delay:0,   drift:55,  rot:320,  color:"#FF9933" },
+  { id:1,  left:"8%",  size:20, duration:15, delay:4,   drift:40,  rot:-280, color:"#FFB347" },
   { id:2,  left:"13%",  size:12, duration:9,  delay:7,   drift:70,  rot:440,  color:"#FF8C00" },
   { id:3,  left:"22%",  size:18, duration:13, delay:2,   drift:-45, rot:-360, color:"#FFA500" },
   { id:4,  left:"31%",  size:14, duration:10, delay:9,   drift:60,  rot:290,  color:"#FF9933" },
@@ -218,7 +217,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
 
   return (
     <div style={{
-      minHeight: "100vh", position: "relative",
+      minHeight: "100dvh", position: "relative",
       display: "flex", alignItems: "center", justifyContent: "center",
       overflow: "hidden", fontFamily: "'Noto Serif','Georgia',serif",
       padding: "24px 20px",
@@ -281,7 +280,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           color:"#FF9933", opacity:s.opacity, transformOrigin:"bottom center",
           animation:`wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
           pointerEvents:"none",
-          willChange: "transform" // 👈 Added performance optimization
+          willChange: "transform" 
         }}>
           <WheatStalk style={{ width:"100%", height:"100%" }} />
         </div>
@@ -298,7 +297,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           transform:"scaleX(-1)",
           animation:`wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
           pointerEvents:"none",
-          willChange: "transform" // 👈 Added performance optimization
+          willChange: "transform" 
         }}>
           <WheatStalk style={{ width:"100%", height:"100%" }} />
         </div>
@@ -312,7 +311,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           zIndex:3, pointerEvents:"none",
           animation:`leafFall ${leaf.duration}s linear ${leaf.delay}s infinite`,
           "--drift":`${leaf.drift}px`, "--rot":`${leaf.rot}deg`,
-          willChange: "transform, opacity" // 👈 Added performance optimization
+          willChange: "transform, opacity" 
         }}>
           <LeafSVG color={leaf.color} />
         </div>
@@ -330,7 +329,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           ? "opacity 0.7s cubic-bezier(0.34,1.46,0.64,1), transform 0.7s cubic-bezier(0.34,1.46,0.64,1)"
           : "none",
         pointerEvents: cardVisible ? "auto" : "none",
-        willChange: cardVisible ? "auto" : "transform, opacity" // 👈 Added conditional performance optimization
+        willChange: cardVisible ? "auto" : "transform, opacity" 
       }}>
         <div style={{
           background:"#ffffff", borderRadius:22,
@@ -360,12 +359,15 @@ export default function HomeView({ onStart, language, setLanguage }) {
             </div>
           </div>
 
-          <h1 style={{ fontSize:"clamp(22px,5vw,32px)", fontWeight:900, color:"#1a2e22", lineHeight:1.22, margin:"0 0 10px" }}>
-            {t.headline}
-          </h1>
-          <p style={{ fontSize:14, color:"#6b8f7a", lineHeight:1.65, margin:"0 0 28px" }}>
-            {t.subtitle}
-          </p>
+          {/* ── FIXED: Fixed-height wrapper prevents the box from resizing when switching languages ── */}
+          <div style={{ minHeight: "130px", display: "flex", flexDirection: "column", justifyContent: "center", marginBottom: "20px" }}>
+            <h1 style={{ fontSize:"clamp(22px,5vw,32px)", fontWeight:900, color:"#1a2e22", lineHeight:1.22, margin:"0 0 10px" }}>
+              {t.headline}
+            </h1>
+            <p style={{ fontSize:14, color:"#6b8f7a", lineHeight:1.65, margin:0 }}>
+              {t.subtitle}
+            </p>
+          </div>
 
           {/* Language toggle */}
           <div style={{ display:"inline-flex", background:"#f1f5f2", borderRadius:10, padding:4, marginBottom:24, border:"1px solid #e2ebe5" }}>
@@ -412,7 +414,7 @@ export default function HomeView({ onStart, language, setLanguage }) {
           6%   { opacity:0.8; }
           40%  { transform:translateY(38vh) translateX(calc(var(--drift)*0.4)) rotate(calc(var(--rot)*0.4)) scale(0.95); }
           85%  { opacity:0.55; }
-          100% { transform:translateY(106vh) translateX(var(--drift)) rotate(var(--rot)) scale(0.75); opacity:0; }
+          100% { transform:translateY(106dvh) translateX(var(--drift)) rotate(var(--rot)) scale(0.75); opacity:0; }
         }
         @keyframes wheatSway {
           0%,100% { transform:rotate(5deg) translateX(0px);  }

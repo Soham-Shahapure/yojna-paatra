@@ -4,19 +4,19 @@ import { User, IndianRupee, Map } from "lucide-react";
 // ── Elegant Saffron Leaf Flurry Transition ────────────────────────────────────
 function ElegantLeafFlurry({ onDone }) {
   useEffect(() => {
-    // Wait for all leaves to fly off-screen and the background to fully fade
-    const t = setTimeout(onDone, 900);
+    // Wait for the background wipe to finish before switching the page
+    const t = setTimeout(onDone, 1200);
     return () => clearTimeout(t);
   }, [onDone]);
 
-  // Predictable pseudo-random leaves for a stable, beautiful 3D flurry
-  const leaves = Array.from({ length: 16 }).map((_, i) => {
-    const size = 25 + ((i * 17) % 45); // 25px to 70px
-    const left = 5 + ((i * 23) % 85); // 5% to 90% across screen
-    const delay = ((i * 7) % 30) / 100; // 0s to 0.3s delay
-    const duration = 0.6 + ((i * 11) % 30) / 100; // 0.6s to 0.9s duration
-    const spin = (i % 2 === 0 ? 1 : -1) * (180 + ((i * 13) % 180)); // 180 to 360 deg
-    const drift = (i % 2 === 0 ? 1 : -1) * ((i * 19) % 80); // -80px to 80px drift
+  // Increased to 40 leaves, slowed down, wider drift for an elegant sweep
+  const leaves = Array.from({ length: 40 }).map((_, i) => {
+    const size = 20 + ((i * 17) % 55); // 20px to 75px
+    const left = -5 + ((i * 23) % 110); // -5% to 105% across screen
+    const delay = ((i * 7) % 50) / 100; // 0s to 0.5s stagger delay
+    const duration = 1.4 + ((i * 11) % 60) / 100; // 1.4s to 2.0s duration (slower)
+    const spin = (i % 2 === 0 ? 1 : -1) * (180 + ((i * 13) % 360)); 
+    const drift = (i % 2 === 0 ? 1 : -1) * (20 + ((i * 19) % 120)); // Wider drift
     return { size, left, delay, duration, spin, drift, id: i };
   });
 
@@ -25,18 +25,18 @@ function ElegantLeafFlurry({ onDone }) {
       position: "fixed", inset: 0, zIndex: 9999,
       pointerEvents: "none", overflow: "hidden"
     }}>
-      {/* Smooth fade to app background color to seamlessly hide the page cut */}
+      {/* Smooth fade to app background color */}
       <div style={{
         position: "absolute", inset: 0,
         background: "#f0fdf4",
-        animation: "bgFadeOut 0.8s ease-in forwards"
+        animation: "bgFadeOut 1.2s ease-in forwards"
       }} />
 
       {/* 3D Swirling Saffron Leaves */}
       {leaves.map((leaf) => (
         <svg key={leaf.id} viewBox="0 0 64 64" style={{
           position: "absolute",
-          bottom: "-15%",
+          bottom: "-20%",
           left: `${leaf.left}%`,
           width: `${leaf.size}px`,
           height: `${leaf.size}px`,
@@ -285,219 +285,227 @@ export default function FormView({
 
   return (
     <div style={{
-      minHeight: "100vh",
+      minHeight: "100dvh", /* FIXED: 100dvh prevents the button from hiding under the mobile browser bar */
       background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
       fontFamily: "'Noto Serif', 'Georgia', serif",
       paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       overflow: "hidden",
-      animation: "pageFadeIn 0.4s ease-out both"
+      /* REMOVED the animation from here so position: fixed works properly */
     }}>
 
-      {/* NEW: Elegant Saffron Leaf Flurry */}
+      {/* NEW: Flurry overlay sits OUTSIDE the transformed container */}
       {bursting && <ElegantLeafFlurry onDone={onSubmit} />}
 
-      {/* ghost wheat — 3 stalks each bottom corner */}
-      {[
-        { bottom: 60,  left: -18,  width: 120, opacity: 0.045, flip: false },
-        { bottom: 55,  left: 16,   width: 90,  opacity: 0.030, flip: false },
-        { bottom: 50,  left: 44,   width: 70,  opacity: 0.020, flip: false },
-        { bottom: 60,  right: -18, width: 120, opacity: 0.045, flip: true  },
-        { bottom: 55,  right: 16,  width: 90,  opacity: 0.030, flip: true  },
-        { bottom: 50,  right: 44,  width: 70,  opacity: 0.020, flip: true  },
-      ].map((s, i) => (
-        <div key={i} style={{
-          position: "fixed", bottom: s.bottom,
-          ...(s.flip ? { right: s.right } : { left: s.left }),
-          width: s.width, color: "#1B4332", opacity: s.opacity,
-          pointerEvents: "none", zIndex: 0,
-          transform: s.flip ? "scaleX(-1)" : undefined,
-        }}>
-          <MiniWheat style={{ width: "100%", height: "auto" }} />
-        </div>
-      ))}
-
-      {/* ── Header ── */}
-      <div style={{
-        background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
-        padding: "clamp(28px, 6vw, 38px) clamp(16px, 4vw, 24px) clamp(20px, 5vw, 30px)",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-        opacity: headerVisible ? 1 : 0,
-        transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
-        transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
-        willChange: headerVisible ? "auto" : "transform, opacity" 
-      }}>
-        {/* dot grid */}
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.055,
-          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-          backgroundSize: "22px 22px",
-        }} />
-
-        {/* yellow top line */}
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 3,
-          background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
-        }} />
-
-        {/* corner wheat */}
+      {/* FIXED: We wrap the page content in this div so the animation doesn't break fixed positioning */}
+      <div style={{ animation: "pageFadeIn 0.4s ease-out both" }}>
+        
+        {/* ghost wheat — 3 stalks each bottom corner */}
         {[
-          { left: -4,  height: 110, opacity: 0.22, flip: false, delay: "0s",   dur: "4s"   },
-          { left: 32,  height: 88,  opacity: 0.14, flip: false, delay: "0.7s", dur: "5s"   },
-          { left: 64,  height: 70,  opacity: 0.09, flip: false, delay: "1.3s", dur: "3.5s" },
-          { right: -4, height: 110, opacity: 0.22, flip: true,  delay: "0.3s", dur: "4.5s" },
-          { right: 32, height: 88,  opacity: 0.14, flip: true,  delay: "1s",   dur: "5s"   },
-          { right: 64, height: 70,  opacity: 0.09, flip: true,  delay: "0s",   dur: "3.8s" },
+          { bottom: 60,  left: -18,  width: 120, opacity: 0.045, flip: false },
+          { bottom: 55,  left: 16,   width: 90,  opacity: 0.030, flip: false },
+          { bottom: 50,  left: 44,   width: 70,  opacity: 0.020, flip: false },
+          { bottom: 60,  right: -18, width: 120, opacity: 0.045, flip: true  },
+          { bottom: 55,  right: 16,  width: 90,  opacity: 0.030, flip: true  },
+          { bottom: 50,  right: 44,  width: 70,  opacity: 0.020, flip: true  },
         ].map((s, i) => (
           <div key={i} style={{
-            position: "absolute", bottom: -4,
+            position: "fixed", bottom: s.bottom,
             ...(s.flip ? { right: s.right } : { left: s.left }),
-            width: s.height * 0.5, height: s.height,
-            color: "#FACC15", opacity: s.opacity,
-            transformOrigin: "bottom center",
-            animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
-            pointerEvents: "none",
-            willChange: "transform" 
+            width: s.width, color: "#1B4332", opacity: s.opacity,
+            pointerEvents: "none", zIndex: 0,
+            transform: s.flip ? "scaleX(-1)" : undefined,
           }}>
-            <MiniWheat style={{ width: "100%", height: "100%" }} />
+            <MiniWheat style={{ width: "100%", height: "auto" }} />
           </div>
         ))}
 
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: "clamp(20px, 6vw, 26px)", marginBottom: 8 }}>📋</div>
-          <h1 style={{ fontSize: "clamp(18px, 5vw, 22px)", fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
-            {t.title}
-          </h1>
-          <p style={{ fontSize: "clamp(11px, 3vw, 13px)", color: "rgba(200,235,216,0.72)", margin: "0 0 20px" }}>
-            {t.subtitle}
-          </p>
-          <ProgressBar filled={filledCount} total={3} />
+        {/* ── Header ── */}
+        <div style={{
+          background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
+          padding: "clamp(28px, 6vw, 38px) clamp(16px, 4vw, 24px) clamp(20px, 5vw, 30px)",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          opacity: headerVisible ? 1 : 0,
+          transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
+          transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+          willChange: headerVisible ? "auto" : "transform, opacity" 
+        }}>
+          {/* dot grid */}
           <div style={{
-            fontSize: "clamp(10px, 2.5vw, 11px)", color: "rgba(250,204,21,0.7)",
-            marginTop: 8, fontWeight: 700, letterSpacing: "0.06em",
-          }}>
-            {filledCount} / 3 {t.complete}
+            position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.055,
+            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }} />
+
+          {/* yellow top line */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 3,
+            background: "linear-gradient(90deg, transparent, #FACC15 30%, #FDE68A 50%, #FACC15 70%, transparent)",
+          }} />
+
+          {/* corner wheat */}
+          {[
+            { left: -4,  height: 110, opacity: 0.22, flip: false, delay: "0s",   dur: "4s"   },
+            { left: 32,  height: 88,  opacity: 0.14, flip: false, delay: "0.7s", dur: "5s"   },
+            { left: 64,  height: 70,  opacity: 0.09, flip: false, delay: "1.3s", dur: "3.5s" },
+            { right: -4, height: 110, opacity: 0.22, flip: true,  delay: "0.3s", dur: "4.5s" },
+            { right: 32, height: 88,  opacity: 0.14, flip: true,  delay: "1s",   dur: "5s"   },
+            { right: 64, height: 70,  opacity: 0.09, flip: true,  delay: "0s",   dur: "3.8s" },
+          ].map((s, i) => (
+            <div key={i} style={{
+              position: "absolute", bottom: -4,
+              ...(s.flip ? { right: s.right } : { left: s.left }),
+              width: s.height * 0.5, height: s.height,
+              color: "#FACC15", opacity: s.opacity,
+              transformOrigin: "bottom center",
+              animation: `wheatSway ${s.dur} ease-in-out ${s.delay} infinite`,
+              pointerEvents: "none",
+              willChange: "transform" 
+            }}>
+              <MiniWheat style={{ width: "100%", height: "100%" }} />
+            </div>
+          ))}
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: "clamp(20px, 6vw, 26px)", marginBottom: 8 }}>📋</div>
+            <h1 style={{ fontSize: "clamp(18px, 5vw, 22px)", fontWeight: 900, color: "#fff", margin: "0 0 6px" }}>
+              {t.title}
+            </h1>
+            <p style={{ fontSize: "clamp(11px, 3vw, 13px)", color: "rgba(200,235,216,0.72)", margin: "0 0 20px" }}>
+              {t.subtitle}
+            </p>
+            <ProgressBar filled={filledCount} total={3} />
+            <div style={{
+              fontSize: "clamp(10px, 2.5vw, 11px)", color: "rgba(250,204,21,0.7)",
+              marginTop: 8, fontWeight: 700, letterSpacing: "0.06em",
+            }}>
+              {filledCount} / 3 {t.complete}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Fields ── */}
-      <div style={{
-        padding: "clamp(12px, 3vw, 20px) clamp(12px, 3vw, 16px)",
-        display: "flex", flexDirection: "column", gap: "clamp(10px, 2.5vw, 14px)",
-        position: "relative", zIndex: 1,
-      }}>
+        {/* ── Fields ── */}
+        <div style={{
+          padding: "clamp(12px, 3vw, 20px) clamp(12px, 3vw, 16px)",
+          display: "flex", flexDirection: "column", gap: "clamp(10px, 2.5vw, 14px)",
+          position: "relative", zIndex: 1,
+        }}>
 
-        <FieldCard
-          icon={<User size={18} />}
-          label={t.ageLabel}
-          stepLabel={`${t.step} 1 / 3`}
-          filled={userData.age !== ""}
-          animDelay={200}
-          focusedField={focusedField}
-          fieldKey="age"
-        >
-          <input
-            type="number" inputMode="numeric"
-            placeholder={t.agePlaceholder}
-            min={1} max={120}
-            value={userData.age}
-            onChange={e => onFormChange("age", e.target.value)}
-            onFocus={() => onFocus("age")}
-            onBlur={onBlur}
-            style={{
-              ...baseInputStyle,
-              borderColor: focusedField === "age"
-                ? "#FACC15"
-                : userData.age ? "#1B4332" : "#e5e7eb",
-              boxShadow: focusedField === "age"
-                ? "0 0 0 3px rgba(250,204,21,0.2)"
-                : "none",
-              background: focusedField === "age" ? "#fffbeb" : "#f9fafb",
-            }}
-          />
-        </FieldCard>
-
-        <FieldCard
-          icon={<IndianRupee size={18} />}
-          label={t.incomeLabel}
-          stepLabel={`${t.step} 2 / 3`}
-          filled={userData.income !== ""}
-          animDelay={380}
-          focusedField={focusedField}
-          fieldKey="income"
-        >
-          <div style={{ position: "relative" }}>
-            <select
-              value={userData.income}
-              onChange={e => onFormChange("income", e.target.value)}
-              onFocus={() => onFocus("income")}
+          <FieldCard
+            icon={<User size={18} />}
+            label={t.ageLabel}
+            stepLabel={`${t.step} 1 / 3`}
+            filled={userData.age !== ""}
+            animDelay={200}
+            focusedField={focusedField}
+            fieldKey="age"
+          >
+            <input
+              type="number" inputMode="numeric"
+              placeholder={t.agePlaceholder}
+              min={1} max={120}
+              value={userData.age}
+              onChange={e => onFormChange("age", e.target.value)}
+              onFocus={() => onFocus("age")}
               onBlur={onBlur}
               style={{
                 ...baseInputStyle,
-                paddingRight: "clamp(30px, 8vw, 40px)",
-                borderColor: focusedField === "income"
+                borderColor: focusedField === "age"
                   ? "#FACC15"
-                  : userData.income ? "#1B4332" : "#e5e7eb",
-                boxShadow: focusedField === "income"
+                  : userData.age ? "#1B4332" : "#e5e7eb",
+                boxShadow: focusedField === "age"
                   ? "0 0 0 3px rgba(250,204,21,0.2)"
                   : "none",
-                background: focusedField === "income" ? "#fffbeb" : "#f9fafb",
+                background: focusedField === "age" ? "#fffbeb" : "#f9fafb",
               }}
-            >
-              {t.incomeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-            <div style={{
-              position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
-              pointerEvents: "none", color: "#9ca3af", fontSize: 11,
-            }}>▼</div>
-          </div>
-        </FieldCard>
+            />
+          </FieldCard>
 
-        <FieldCard
-          icon={<Map size={18} />}
-          label={t.landLabel}
-          stepLabel={`${t.step} 3 / 3`}
-          filled={userData.land !== ""}
-          animDelay={560}
-          focusedField={focusedField}
-          fieldKey="land"
-        >
-          <div style={{ position: "relative" }}>
-            <select
-              value={userData.land}
-              onChange={e => onFormChange("land", e.target.value)}
-              onFocus={() => onFocus("land")}
-              onBlur={onBlur}
-              style={{
-                ...baseInputStyle,
-                paddingRight: "clamp(30px, 8vw, 40px)",
-                borderColor: focusedField === "land"
-                  ? "#FACC15"
-                  : userData.land ? "#1B4332" : "#e5e7eb",
-                boxShadow: focusedField === "land"
-                  ? "0 0 0 3px rgba(250,204,21,0.2)"
-                  : "none",
-                background: focusedField === "land" ? "#fffbeb" : "#f9fafb",
-              }}
-            >
-              {t.landOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-            <div style={{
-              position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
-              pointerEvents: "none", color: "#9ca3af", fontSize: 11,
-            }}>▼</div>
-          </div>
-        </FieldCard>
+          <FieldCard
+            icon={<IndianRupee size={18} />}
+            label={t.incomeLabel}
+            stepLabel={`${t.step} 2 / 3`}
+            filled={userData.income !== ""}
+            animDelay={380}
+            focusedField={focusedField}
+            fieldKey="income"
+          >
+            <div style={{ position: "relative" }}>
+              <select
+                value={userData.income}
+                onChange={e => onFormChange("income", e.target.value)}
+                onFocus={() => onFocus("income")}
+                onBlur={onBlur}
+                style={{
+                  ...baseInputStyle,
+                  paddingRight: "clamp(30px, 8vw, 40px)",
+                  borderColor: focusedField === "income"
+                    ? "#FACC15"
+                    : userData.income ? "#1B4332" : "#e5e7eb",
+                  boxShadow: focusedField === "income"
+                    ? "0 0 0 3px rgba(250,204,21,0.2)"
+                    : "none",
+                  background: focusedField === "income" ? "#fffbeb" : "#f9fafb",
+                }}
+              >
+                {t.incomeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <div style={{
+                position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
+                pointerEvents: "none", color: "#9ca3af", fontSize: 11,
+              }}>▼</div>
+            </div>
+          </FieldCard>
 
-      </div>
+          <FieldCard
+            icon={<Map size={18} />}
+            label={t.landLabel}
+            stepLabel={`${t.step} 3 / 3`}
+            filled={userData.land !== ""}
+            animDelay={560}
+            focusedField={focusedField}
+            fieldKey="land"
+          >
+            <div style={{ position: "relative" }}>
+              <select
+                value={userData.land}
+                onChange={e => onFormChange("land", e.target.value)}
+                onFocus={() => onFocus("land")}
+                onBlur={onBlur}
+                style={{
+                  ...baseInputStyle,
+                  paddingRight: "clamp(30px, 8vw, 40px)",
+                  borderColor: focusedField === "land"
+                    ? "#FACC15"
+                    : userData.land ? "#1B4332" : "#e5e7eb",
+                  boxShadow: focusedField === "land"
+                    ? "0 0 0 3px rgba(250,204,21,0.2)"
+                    : "none",
+                  background: focusedField === "land" ? "#fffbeb" : "#f9fafb",
+                }}
+              >
+                {t.landOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <div style={{
+                position: "absolute", right: "clamp(10px, 3vw, 14px)", top: "50%", transform: "translateY(-50%)",
+                pointerEvents: "none", color: "#9ca3af", fontSize: 11,
+              }}>▼</div>
+            </div>
+          </FieldCard>
 
+        </div>
+      </div> {/* <-- End of animated wrapper */}
+
+      {/* FIXED: Restored the env(safe-area-inset-bottom) padding you had previously! */}
       {/* ── Fixed CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
-        padding: "clamp(8px, 2vw, 10px) clamp(12px, 3.5vw, 16px) clamp(16px, 5vw, 22px)",
+        paddingTop: "clamp(8px, 2vw, 10px)",
+        paddingLeft: "clamp(12px, 3.5vw, 16px)",
+        paddingRight: "clamp(12px, 3.5vw, 16px)",
+        paddingBottom: "calc(clamp(16px, 5vw, 22px) + env(safe-area-inset-bottom, 24px))",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
         animation: "ctaSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both",
@@ -551,8 +559,8 @@ export default function FormView({
         @keyframes leafFlurry {
           0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); opacity: 0; }
           10% { opacity: 1; scale: 1; }
-          90% { opacity: 1; }
-          100% { transform: translateY(-115vh) translateX(var(--drift)) rotate(var(--spin)) scale(1.1); opacity: 0; }
+          85% { opacity: 1; }
+          100% { transform: translateY(-120dvh) translateX(var(--drift)) rotate(var(--spin)) scale(1.1); opacity: 0; }
         }
         @keyframes iconPulse {
           0%, 100% { box-shadow: 0 4px 12px rgba(27,67,50,0.25); }
