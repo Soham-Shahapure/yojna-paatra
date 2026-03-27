@@ -287,10 +287,14 @@ export default function DetailsView({ scheme, onBack, language }) {
         </div>
       </div>
 
+      {/* 👇 CHANGES MADE HERE: Added env() logic to the bottom padding 👇 */}
       {/* ── Sticky apply CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
-        padding: "clamp(8px, 2vw, 10px) clamp(12px, 3.5vw, 16px) clamp(16px, 5vw, 22px)",
+        paddingTop: "clamp(8px, 2vw, 10px)",
+        paddingLeft: "clamp(12px, 3.5vw, 16px)",
+        paddingRight: "clamp(12px, 3.5vw, 16px)",
+        paddingBottom: "calc(clamp(16px, 5vw, 22px) + env(safe-area-inset-bottom, 24px))",
         background: "linear-gradient(to top, #f0fdf4 75%, transparent)",
         zIndex: 10,
       }}>

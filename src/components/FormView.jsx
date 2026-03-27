@@ -1,93 +1,68 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { User, IndianRupee, Map } from "lucide-react";
 
-// ── Canvas leaf factory (for CTAExplosion) ────────────────────────────────────
-const LEAF_COLORS = ["#FF9933","#FFB347","#FF8C00","#FFA500","#FFCC80","#F97316","#FB923C","#FDBA74"];
-
-function makeLeafImg(color) {
-  const c = document.createElement("canvas");
-  c.width = 32; c.height = 42;
-  const ctx = c.getContext("2d");
-  ctx.beginPath();
-  ctx.moveTo(16,40); ctx.bezierCurveTo(16,40,2,30,2,17);
-  ctx.bezierCurveTo(2,8,8,1,16,1);
-  ctx.bezierCurveTo(24,1,30,8,30,17);
-  ctx.bezierCurveTo(30,30,16,40,16,40);
-  ctx.fillStyle = color; ctx.fill();
-  ctx.beginPath(); ctx.moveTo(16,40); ctx.lineTo(16,1);
-  ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth=1; ctx.stroke();
-  return c;
-}
-
-// ── Burst particle ────────────────────────────────────────────────────────────
-class BurstParticle {
-  constructor(x, y, imgs) {
-    this.x = x; this.y = y;
-    this.img = imgs[Math.floor(Math.random() * imgs.length)];
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 3 + Math.random() * 6;
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed - 2.5;
-    this.gravity = 0.04 + Math.random() * 0.04;
-    this.rotation = Math.random() * Math.PI * 2;
-    this.rotSpeed = (Math.random() - 0.5) * 0.14;
-    this.scale = 0.5 + Math.random() * 1.4;
-    this.alpha = 1;
-    this.decay = 0.006 + Math.random() * 0.007;
-    this.alive = true;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    this.vy += this.gravity; this.vx *= 0.982;
-    this.rotation += this.rotSpeed;
-    this.alpha -= this.decay;
-    if (this.alpha <= 0) this.alive = false;
-  }
-  draw(ctx) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, this.alpha);
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rotation);
-    ctx.scale(this.scale, this.scale);
-    ctx.drawImage(this.img, -16, -21);
-    ctx.restore();
-  }
-}
-
-// ── CTA Explosion Canvas (swapped in from HomeView) ───────────────────────────
-function CTAExplosionCanvas({ onDone }) {
-  const canvasRef = useRef(null);
+// ── Elegant Saffron Leaf Flurry Transition ────────────────────────────────────
+function ElegantLeafFlurry({ onDone }) {
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const W = canvas.width, H = canvas.height;
-    const imgs = LEAF_COLORS.map(makeLeafImg);
-    const cx = W / 2, cy = H / 2 + 80;
-    let particles = Array.from({ length: 140 }, () =>
-      new BurstParticle(cx + (Math.random()-0.5)*W*0.55, cy + (Math.random()-0.5)*30, imgs)
-    );
-    let overlay = 0, frame = 0, animId;
-    const draw = () => {
-      frame++;
-      ctx.clearRect(0, 0, W, H);
-      particles = particles.filter(p => p.alive);
-      particles.forEach(p => { p.update(); p.draw(ctx); });
-      if (frame > 55) {
-        overlay = Math.min(1, overlay + 0.09);
-        ctx.fillStyle = `rgba(240,253,244,${overlay})`;
-        ctx.fillRect(0, 0, W, H);
-      }
-      if (overlay >= 1) { cancelAnimationFrame(animId); onDone(); return; }
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => cancelAnimationFrame(animId);
+    // Wait for all leaves to fly off-screen and the background to fully fade
+    const t = setTimeout(onDone, 900);
+    return () => clearTimeout(t);
   }, [onDone]);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:9999, pointerEvents:"none", width:"100%", height:"100%" }} />;
-}
 
+  // Predictable pseudo-random leaves for a stable, beautiful 3D flurry
+  const leaves = Array.from({ length: 16 }).map((_, i) => {
+    const size = 25 + ((i * 17) % 45); // 25px to 70px
+    const left = 5 + ((i * 23) % 85); // 5% to 90% across screen
+    const delay = ((i * 7) % 30) / 100; // 0s to 0.3s delay
+    const duration = 0.6 + ((i * 11) % 30) / 100; // 0.6s to 0.9s duration
+    const spin = (i % 2 === 0 ? 1 : -1) * (180 + ((i * 13) % 180)); // 180 to 360 deg
+    const drift = (i % 2 === 0 ? 1 : -1) * ((i * 19) % 80); // -80px to 80px drift
+    return { size, left, delay, duration, spin, drift, id: i };
+  });
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      pointerEvents: "none", overflow: "hidden"
+    }}>
+      {/* Smooth fade to app background color to seamlessly hide the page cut */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "#f0fdf4",
+        animation: "bgFadeOut 0.8s ease-in forwards"
+      }} />
+
+      {/* 3D Swirling Saffron Leaves */}
+      {leaves.map((leaf) => (
+        <svg key={leaf.id} viewBox="0 0 64 64" style={{
+          position: "absolute",
+          bottom: "-15%",
+          left: `${leaf.left}%`,
+          width: `${leaf.size}px`,
+          height: `${leaf.size}px`,
+          "--drift": `${leaf.drift}px`,
+          "--spin": `${leaf.spin}deg`,
+          filter: "drop-shadow(0 10px 15px rgba(234, 88, 12, 0.4))",
+          animation: `leafFlurry ${leaf.duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${leaf.delay}s both`
+        }}>
+          <defs>
+            <linearGradient id={`gradFlurry${leaf.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={leaf.id % 2 === 0 ? "#FACC15" : "#F97316"} />
+              <stop offset="100%" stopColor={leaf.id % 3 === 0 ? "#EA580C" : "#F59E0B"} />
+            </linearGradient>
+          </defs>
+          {/* Leaf Body */}
+          <path d="M32 60 C32 60 4 45 4 25 C4 12 13 2 32 2 C51 2 60 12 60 25 C60 45 32 60 32 60 Z" fill={`url(#gradFlurry${leaf.id})`} />
+          {/* Main Vein */}
+          <path d="M32 60 L32 2" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" />
+          {/* Side Veins */}
+          <path d="M32 45 L20 35 M32 30 L22 22 M32 15 L26 10" stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none" strokeLinecap="round" />
+          <path d="M32 45 L44 35 M32 30 L42 22 M32 15 L38 10" stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none" strokeLinecap="round" />
+        </svg>
+      ))}
+    </div>
+  );
+}
 
 const CONTENT = {
   mr: {
@@ -106,8 +81,8 @@ const CONTENT = {
     landOptions: [
       { value: "",      label: "-- निवडा --" },
       { value: "None",  label: "जमीन नाही (Landless)" },
-      { value: "<2",    label: "२ हेक्टरपेक्षा कमी" },
-      { value: ">2",    label: "२ हेक्टरपेक्षा जास्त" },
+      { value: "<5",    label: "५ एकरापेक्षा कमी" },
+      { value: ">5",    label: "५ एकरापेक्षा जास्त" },
     ],
     cta: "माझ्यासाठी योजना शोधा →",
     step: "पाऊल",
@@ -129,8 +104,8 @@ const CONTENT = {
     landOptions: [
       { value: "",      label: "-- Select --" },
       { value: "None",  label: "No Land (Landless)" },
-      { value: "<2",    label: "Less than 2 Hectares" },
-      { value: ">2",    label: "More than 2 Hectares" },
+      { value: "<5",    label: "Less than 5 Acres" },
+      { value: ">5",    label: "More than 5 Acres" },
     ],
     cta: "Find Schemes for Me →",
     step: "Step",
@@ -316,10 +291,11 @@ export default function FormView({
       paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       overflow: "hidden",
+      animation: "pageFadeIn 0.4s ease-out both"
     }}>
 
-      {/* CTA Explosion — swapped in from HomeView */}
-      {bursting && <CTAExplosionCanvas onDone={onSubmit} />}
+      {/* NEW: Elegant Saffron Leaf Flurry */}
+      {bursting && <ElegantLeafFlurry onDone={onSubmit} />}
 
       {/* ghost wheat — 3 stalks each bottom corner */}
       {[
@@ -564,6 +540,20 @@ export default function FormView({
 
       {/* ── Keyframes ── */}
       <style>{`
+        @keyframes pageFadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bgFadeOut {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes leafFlurry {
+          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); opacity: 0; }
+          10% { opacity: 1; scale: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(-115vh) translateX(var(--drift)) rotate(var(--spin)) scale(1.1); opacity: 0; }
+        }
         @keyframes iconPulse {
           0%, 100% { box-shadow: 0 4px 12px rgba(27,67,50,0.25); }
           50%       { box-shadow: 0 4px 20px rgba(250,204,21,0.45), 0 0 0 4px rgba(250,204,21,0.12); }

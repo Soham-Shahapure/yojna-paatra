@@ -75,15 +75,23 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setUserData(INITIAL_USER_DATA);
+    // 1. Removed setUserData to keep their previous inputs intact
     setEligibleSchemes([]);
     setSelectedScheme(null);
-    setCurrentView(VIEWS.HOME);
+    // 2. Changed destination from HOME to FORM
+    setCurrentView(VIEWS.FORM); 
   };
 
   return (
     <div className="app-root" data-view={currentView} style={{ background: "#f0fdf4", minHeight: "100vh" }}>
-      <header className="app-header bg-card shadow-sm px-6 py-4 flex items-center justify-between">
+      {/* 👇 CHANGES MADE HERE: Removed py-4 and added the env() safe-area style 👇 */}
+      <header 
+        className="app-header bg-card shadow-sm px-6 flex items-center justify-between"
+        style={{ 
+          paddingTop: "calc(16px + env(safe-area-inset-top, 24px))", 
+          paddingBottom: "16px" 
+        }}
+      >
         <div className="flex items-center gap-2">
           <span className="text-2xl">🌾</span>
           <span className="font-bold" style={{ color: "var(--primary)" }}>Yojna-Paatra</span>

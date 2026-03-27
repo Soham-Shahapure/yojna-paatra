@@ -6,7 +6,7 @@ const schemes = [
       mr: "गोपीनाथ मुंडे शेतकरी अपघात विमा योजना",
       en: "Gopinath Munde Shetkari Apghat Vima Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "₹२,००,००० पर्यंत भरपाई",
       en: "Up to ₹2,00,000 compensation"
@@ -24,7 +24,7 @@ const schemes = [
       mr: "मागेल त्याला शेततळे",
       en: "Magel Tyala Shettale"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "४०% ते १००% अनुदान",
       en: "40% to 100% Subsidy"
@@ -42,7 +42,7 @@ const schemes = [
       mr: "मुख्यमंत्री सौर कृषी पंप योजना",
       en: "Chief Minister Solar Agriculture Pump Scheme"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "६०% ते ९५% पर्यंत अनुदान",
       en: "60% to 95% Subsidy"
@@ -60,7 +60,7 @@ const schemes = [
       mr: "जलयुक्त शिवार अभियान",
       en: "Jalyukt Shivar Abhiyan"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "जलसंधारणासाठी १००% खर्च",
       en: "100% cost for water conservation works"
@@ -78,7 +78,7 @@ const schemes = [
       mr: "राज्य सूक्ष्म सिंचन अनुदान योजना",
       en: "State Micro-Irrigation Subsidy Scheme"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "५०% ते ७५% पर्यंत अनुदान",
       en: "50% to 75% Subsidy"
@@ -98,7 +98,7 @@ const schemes = [
       mr: "पंतप्रधान पीक विमा योजना (PMFBY)",
       en: "Pradhan Mantri Fasal Bima Yojana (PMFBY)"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "पिकांच्या नुकसानीवर विमा भरपाई",
       en: "Crop insurance coverage for damage"
@@ -116,7 +116,7 @@ const schemes = [
       mr: "पीएम किसान सन्मान निधी",
       en: "PM Kisan Samman Nidhi Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "₹६,००० प्रति वर्ष",
       en: "₹6,000 per year"
@@ -134,7 +134,7 @@ const schemes = [
       mr: "महात्मा जोतीराव फुले शेतकरी कर्जमुक्ती योजना",
       en: "Mahatma Jyotirao Phule Shetkari Karjmukti Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "₹२ लाख पर्यंत कर्जमाफी",
       en: "Loan Waiver up to ₹2 Lakh"
@@ -152,7 +152,7 @@ const schemes = [
       mr: "नमो शेतकरी महासन्मान निधी योजना",
       en: "Namo Shetkari Mahasanman Nidhi Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "अतिरिक्त ₹६,००० प्रति वर्ष",
       en: "Additional ₹6,000 per year"
@@ -170,7 +170,7 @@ const schemes = [
       mr: "किसान क्रेडिट कार्ड (KCC)",
       en: "Kisan Credit Card (KCC) Scheme"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "स्वस्त दरात पीक कर्ज",
       en: "Short-term agricultural loans at low interest"
@@ -190,7 +190,7 @@ const schemes = [
       mr: "पंतप्रधान किसान मानधन योजना (पेन्शन)",
       en: "Pradhan Mantri Kisan Maandhan Yojana (Pension)"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5"] },
     benefitAmount: {
       mr: "₹३,०००/महिना पेन्शन (वयाच्या ६० नंतर)",
       en: "₹3,000/month Pension after age 60"
@@ -208,7 +208,7 @@ const schemes = [
       mr: "महाराष्ट्र कृषी यांत्रिकीकरण योजना",
       en: "Maharashtra Agriculture Mechanization Scheme"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "ट्रॅक्टर/अवजारांवर ४०-५०% अनुदान",
       en: "40% to 50% Subsidy on Tractors/Implements"
@@ -226,7 +226,7 @@ const schemes = [
       mr: "राष्ट्रीय फलोत्पादन अभियान (NHM)",
       en: "National Horticulture Mission / MIDH"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "फळबाग, हरितगृहांसाठी अनुदान",
       en: "Subsidy for fruit crops, polyhouses"
@@ -244,7 +244,7 @@ const schemes = [
       mr: "कांदा चाळ उभारणीसाठी अनुदान",
       en: "Subsidy for Onion Storage (Chavadi)"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "कांदा साठवणूक बांधकामासाठी अनुदान",
       en: "Capital subsidy for onion storage structures"
@@ -262,7 +262,7 @@ const schemes = [
       mr: "पीएम कुसुम योजना (सौर पंप)",
       en: "PM-KUSUM Yojana (Solar Pumps)"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "सौर पंपावर ९०-९५% अनुदान",
       en: "90-95% Subsidy on Solar Pumps"
@@ -282,7 +282,7 @@ const schemes = [
       mr: "भाऊसाहेब फुंडकर फळबाग लागवड योजना",
       en: "Bhausaheb Fundkar Falbag Lagwad Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["<5", ">5"] },
     benefitAmount: {
       mr: "३ वर्षांसाठी १००% अनुदान",
       en: "100% Subsidy for 3 years"
@@ -300,7 +300,7 @@ const schemes = [
       mr: "मृदा आरोग्य पत्रिका योजना (Soil Health Card)",
       en: "Soil Health Card (SHC) Scheme"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "मोफत माती परीक्षण व सल्ला",
       en: "Free soil testing & personalized advice"
@@ -318,7 +318,7 @@ const schemes = [
       mr: "अटल बांबू समृद्धी योजना",
       en: "Maharashtra Atal Bamboo Samruddhi Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "बांबू लागवडीसाठी आर्थिक सहाय्य",
       en: "Support for bamboo cultivation & industry"
@@ -336,7 +336,7 @@ const schemes = [
       mr: "ई-नाम (e-NAM) राष्ट्रीय कृषी बाजार",
       en: "e-NAM (National Agriculture Market)"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "थेट बँक पेमेंट, चांगल्या किमती",
       en: "Online mandi selling, payment directly to bank"
@@ -354,7 +354,7 @@ const schemes = [
       mr: "शरद पवार ग्रामसमृद्धी योजना",
       en: "Sharad Pawar Gram Samruddhi Yojana"
     },
-    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<2", ">2"] },
+    eligibility: { minAge: 18, maxIncomeLevel: "Any", landRequirement: ["None", "<5", ">5"] },
     benefitAmount: {
       mr: "गोठा, शेळीपालन शेडसाठी १००% अनुदान",
       en: "100% Subsidy for Sheds (Cow/Buffalo/Goat)"
