@@ -1,23 +1,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { User, IndianRupee, Map } from "lucide-react";
 
-// ── Elegant Saffron Leaf Flurry Transition ────────────────────────────────────
+// ── Cinematic Saffron Leaf Flurry Transition (Original Consistent Colors) ─────
 function ElegantLeafFlurry({ onDone }) {
   useEffect(() => {
-    // Wait for the background wipe to finish before switching the page
-    const t = setTimeout(onDone, 1200);
+    const t = setTimeout(onDone, 1700); 
     return () => clearTimeout(t);
   }, [onDone]);
 
-  // Increased to 40 leaves, slowed down, wider drift for an elegant sweep
-  const leaves = Array.from({ length: 40 }).map((_, i) => {
-    const size = 20 + ((i * 17) % 55); // 20px to 75px
-    const left = -5 + ((i * 23) % 110); // -5% to 105% across screen
-    const delay = ((i * 7) % 50) / 100; // 0s to 0.5s stagger delay
-    const duration = 1.4 + ((i * 11) % 60) / 100; // 1.4s to 2.0s duration (slower)
-    const spin = (i % 2 === 0 ? 1 : -1) * (180 + ((i * 13) % 360)); 
-    const drift = (i % 2 === 0 ? 1 : -1) * (20 + ((i * 19) % 120)); // Wider drift
-    return { size, left, delay, duration, spin, drift, id: i };
+  const leaves = Array.from({ length: 32 }).map((_, i) => {
+    const size = 80 + ((i * 29) % 150); 
+    const left = -20 + ((i * 17) % 120); 
+    const delay = ((i * 13) % 40) / 100; 
+    const duration = 1.8 + ((i * 19) % 150) / 100; 
+    const spin = (i % 2 === 0 ? 1 : -1) * (90 + ((i * 23) % 180)); 
+    const drift = (i % 2 === 0 ? 1 : -1) * (50 + ((i * 31) % 150)); 
+    
+    // RESTORED: The exact solid Hex colors from your HomeView.js animation
+    const LEAF_COLORS = ["FF9933", "FFB347", "FF8C00", "FFA500", "FFCC80", "F97316", "FB923C", "FDBA74"];
+    const hexColor = LEAF_COLORS[i % 8];
+    
+    const svgUri = `data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 42'%3E%3Cpath d='M16 40 C16 40 2 30 2 17 C2 8 8 1 16 1 C24 1 30 8 30 17 C30 30 16 40 16 40Z' fill='%23${hexColor}' /%3E%3Cpath d='M16 40 C16 28 16 12 16 1' stroke='%23ffffff' stroke-opacity='0.28' stroke-width='1' stroke-linecap='round' fill='none' /%3E%3Cpath d='M16 20 C12 16 7 15 2 15' stroke='%23ffffff' stroke-opacity='0.18' stroke-width='0.8' stroke-linecap='round' fill='none' /%3E%3Cpath d='M16 28 C20 24 25 23 30 23' stroke='%23ffffff' stroke-opacity='0.18' stroke-width='0.8' stroke-linecap='round' fill='none' /%3E%3C/svg%3E`;
+
+    return { size, left, delay, duration, spin, drift, id: i, svgUri };
   });
 
   return (
@@ -25,40 +30,26 @@ function ElegantLeafFlurry({ onDone }) {
       position: "fixed", inset: 0, zIndex: 9999,
       pointerEvents: "none", overflow: "hidden"
     }}>
-      {/* Smooth fade to app background color */}
       <div style={{
         position: "absolute", inset: 0,
         background: "#f0fdf4",
-        animation: "bgFadeOut 1.2s ease-in forwards"
+        animation: "bgFadeOut 1.8s ease-in forwards"
       }} />
 
-      {/* 3D Swirling Saffron Leaves */}
       {leaves.map((leaf) => (
-        <svg key={leaf.id} viewBox="0 0 64 64" style={{
+        <div key={leaf.id} style={{
           position: "absolute",
-          bottom: "-20%",
+          bottom: "-30%",
           left: `${leaf.left}%`,
           width: `${leaf.size}px`,
           height: `${leaf.size}px`,
+          backgroundImage: `url("${leaf.svgUri}")`,
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
           "--drift": `${leaf.drift}px`,
           "--spin": `${leaf.spin}deg`,
-          filter: "drop-shadow(0 10px 15px rgba(234, 88, 12, 0.4))",
           animation: `leafFlurry ${leaf.duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${leaf.delay}s both`
-        }}>
-          <defs>
-            <linearGradient id={`gradFlurry${leaf.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={leaf.id % 2 === 0 ? "#FACC15" : "#F97316"} />
-              <stop offset="100%" stopColor={leaf.id % 3 === 0 ? "#EA580C" : "#F59E0B"} />
-            </linearGradient>
-          </defs>
-          {/* Leaf Body */}
-          <path d="M32 60 C32 60 4 45 4 25 C4 12 13 2 32 2 C51 2 60 12 60 25 C60 45 32 60 32 60 Z" fill={`url(#gradFlurry${leaf.id})`} />
-          {/* Main Vein */}
-          <path d="M32 60 L32 2" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" />
-          {/* Side Veins */}
-          <path d="M32 45 L20 35 M32 30 L22 22 M32 15 L26 10" stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none" strokeLinecap="round" />
-          <path d="M32 45 L44 35 M32 30 L42 22 M32 15 L38 10" stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none" strokeLinecap="round" />
-        </svg>
+        }} />
       ))}
     </div>
   );
@@ -285,19 +276,18 @@ export default function FormView({
 
   return (
     <div style={{
-      minHeight: "100dvh", /* FIXED: 100dvh prevents the button from hiding under the mobile browser bar */
+      minHeight: "100dvh", 
       background: "linear-gradient(170deg, #f0fdf4 0%, #f9fafb 55%, #f0fdf4 100%)",
       fontFamily: "'Noto Serif', 'Georgia', serif",
       paddingBottom: "clamp(80px, 15vh, 110px)",
       position: "relative",
       overflow: "hidden",
-      /* REMOVED the animation from here so position: fixed works properly */
     }}>
 
-      {/* NEW: Flurry overlay sits OUTSIDE the transformed container */}
+      {/* Flurry overlay sits OUTSIDE the transformed container */}
       {bursting && <ElegantLeafFlurry onDone={onSubmit} />}
 
-      {/* FIXED: We wrap the page content in this div so the animation doesn't break fixed positioning */}
+      {/* We wrap the page content in this div so the animation doesn't break fixed positioning */}
       <div style={{ animation: "pageFadeIn 0.4s ease-out both" }}>
         
         {/* ghost wheat — 3 stalks each bottom corner */}
@@ -498,7 +488,6 @@ export default function FormView({
         </div>
       </div> {/* <-- End of animated wrapper */}
 
-      {/* FIXED: Restored the env(safe-area-inset-bottom) padding you had previously! */}
       {/* ── Fixed CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
@@ -557,10 +546,10 @@ export default function FormView({
           100% { opacity: 1; }
         }
         @keyframes leafFlurry {
-          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); opacity: 0; }
-          10% { opacity: 1; scale: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateY(-120dvh) translateX(var(--drift)) rotate(var(--spin)) scale(1.1); opacity: 0; }
+          0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6); opacity: 0; }
+          5% { opacity: 1; }
+          95% { opacity: 1; } 
+          100% { transform: translate3d(var(--drift), -150dvh, 0) rotate(var(--spin)) scale(1.6); opacity: 0; }
         }
         @keyframes iconPulse {
           0%, 100% { box-shadow: 0 4px 12px rgba(27,67,50,0.25); }

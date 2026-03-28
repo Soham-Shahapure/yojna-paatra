@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { CheckCircle, Frown, RotateCcw } from "lucide-react";
+import { CheckCircle, Frown, RotateCcw, WifiOff } from "lucide-react"; // WifiOff आइकॉन जोड़ा गया है
 
 // ── Mini wheat SVG ────────────────────────────────────────────────────────────
 const MiniWheat = ({ style }) => (
@@ -25,11 +25,9 @@ function TwoLeafSlide({ onDone }) {
     canvas.height = window.innerHeight;
     const W = canvas.width, H = canvas.height;
 
-    // Leaf size grows large enough to cover the full screen
     const DIAGONAL = Math.sqrt(W * W + H * H);
-    const BASE_SIZE = DIAGONAL * 0.72; // base draw size
+    const BASE_SIZE = DIAGONAL * 0.72;
 
-    // Helper: draw a leaf onto an offscreen canvas
     function makeLeaf(color1, color2) {
       const off = document.createElement("canvas");
       off.width  = BASE_SIZE;
@@ -46,11 +44,9 @@ function TwoLeafSlide({ onDone }) {
       grad.addColorStop(0, color1);
       grad.addColorStop(1, color2);
       lc.fillStyle = grad; lc.fill();
-      // midrib
       lc.beginPath();
       lc.moveTo(lw*0.5, lh*0.97); lc.lineTo(lw*0.5, lh*0.02);
       lc.strokeStyle = "rgba(255,255,255,0.3)"; lc.lineWidth = lw*0.018; lc.stroke();
-      // veins
       [[0.3,0.6],[0.55,0.5],[0.75,0.4]].forEach(([t, vw]) => {
         const vy = lh*t, vwpx = lw*vw*0.42;
         lc.beginPath();
@@ -61,21 +57,18 @@ function TwoLeafSlide({ onDone }) {
       return off;
     }
 
-    const leafL = makeLeaf("#FFCC80", "#FF8C00"); // left — warm orange
-    const leafR = makeLeaf("#FFB347", "#e65c00"); // right — deeper saffron
+    const leafL = makeLeaf("#FFCC80", "#FF8C00"); 
+    const leafR = makeLeaf("#FFB347", "#e65c00"); 
 
-    // Leaves anchor at vertical centre of screen
     const yL = H * 0.38;
     const yR = H * 0.62;
 
-    // ── Paint background IMMEDIATELY so there is never a blank frame ─────
     ctx.fillStyle = "#f0fdf4";
     ctx.fillRect(0, 0, W, H);
 
     let progress = 0;
     let animId;
 
-    // ease in-out sine — smooth, unhurried
     const ease = t => -(Math.cos(Math.PI * t) - 1) / 2;
 
     const draw = () => {
@@ -100,7 +93,6 @@ function TwoLeafSlide({ onDone }) {
       const xR = W + BASE_SIZE * 0.6 - t * (W * 0.42 + BASE_SIZE * 0.6);
       const rotR = 0.45 - t * 0.38;
 
-      // Draw left leaf
       ctx.save();
       ctx.globalAlpha = alpha * 0.93;
       ctx.translate(xL, yL);
@@ -109,11 +101,10 @@ function TwoLeafSlide({ onDone }) {
       ctx.drawImage(leafL, -BASE_SIZE * 0.5, -BASE_SIZE * 0.65);
       ctx.restore();
 
-      // Draw right leaf (flipped horizontally)
       ctx.save();
       ctx.globalAlpha = alpha * 0.93;
       ctx.translate(xR, yR);
-      ctx.scale(-scale, scale); // flip
+      ctx.scale(-scale, scale); 
       ctx.rotate(-rotR);
       ctx.drawImage(leafR, -BASE_SIZE * 0.5, -BASE_SIZE * 0.65);
       ctx.restore();
@@ -186,7 +177,7 @@ function SchemeCard({ scheme, onViewDetails, onTriggerLeaf, language, index }) {
         borderRadius: "20px 0 0 20px",
       }} />
 
-{/* faint wheat watermark */}
+      {/* faint wheat watermark */}
       <div style={{
         position: "absolute", right: -4, bottom: -8,
         width: "clamp(38px, 11vw, 48px)", color: "#1B4332", opacity: 0.04, pointerEvents: "none",
@@ -255,10 +246,27 @@ export default function ResultsView({
   const hasSchemes = eligibleSchemes.length > 0;
   const [headerVisible, setHeaderVisible] = useState(false);
   const [pendingNav, setPendingNav]        = useState(null);
+  
+  // 🟢 OFFLINE SUPPORT STATE: नेटवर्क स्टेटस चेक करने के लिए
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
     const t = setTimeout(() => setHeaderVisible(true), 60);
     return () => clearTimeout(t);
+  }, []);
+
+  // 🟢 OFFLINE LISTENER: इंटरनेट जाने या आने पर ऐप को अपडेट करने के लिए
+  useEffect(() => {
+    const handleOffline = () => setIsOffline(true);
+    const handleOnline = () => setIsOffline(false);
+    
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
   }, []);
 
   return (
@@ -270,6 +278,24 @@ export default function ResultsView({
       position: "relative",
       overflow: "hidden",
     }}>
+
+      {/* 🟢 OFFLINE BANNER: जब इंटरनेट बंद होगा, तब यह लाल बैनर स्क्रीन के ऊपर आएगा */}
+      {isOffline && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 100000,
+          background: "#ef4444", color: "#fff",
+          padding: "clamp(6px, 2vw, 8px)", textAlign: "center",
+          fontSize: "clamp(11px, 3vw, 13px)", fontWeight: 700,
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          boxShadow: "0 2px 10px rgba(239,68,68,0.4)",
+          animation: "offlineSlideDown 0.3s ease-out forwards"
+        }}>
+          <WifiOff size={16} />
+          {isMarathi 
+            ? "तुम्ही सध्या ऑफलाइन आहात. सेव्ह केलेल्या योजना दाखवत आहोत." 
+            : "You are offline. Showing saved schemes."}
+        </div>
+      )}
 
       {pendingNav && (
         <TwoLeafSlide onDone={() => {
@@ -411,7 +437,6 @@ export default function ResultsView({
         ))}
       </div>
 
-      {/* 👇 CHANGES MADE HERE: Added env() logic to the bottom padding 👇 */}
       {/* ── Fixed reset CTA ── */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
@@ -451,6 +476,11 @@ export default function ResultsView({
       </div>
 
       <style>{`
+        /* 🟢 OFFLINE BANNER ANIMATION */
+        @keyframes offlineSlideDown {
+          from { transform: translateY(-100%); opacity: 0; }
+          to   { transform: translateY(0); opacity: 1; }
+        }
         @keyframes resultsBounce {
           from { opacity: 0; transform: scale(0.3) rotate(-15deg); }
           to   { opacity: 1; transform: scale(1) rotate(0deg); }
